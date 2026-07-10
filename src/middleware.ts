@@ -2,8 +2,8 @@ import { defineMiddleware } from 'astro:middleware'
 import { getAuth } from './lib/auth'
 import { getServerEnv } from './lib/env'
 
-// Zonas privadas: todo bajo /app requiere sesión.
-const PROTECTED_PREFIX = '/app'
+// Zonas privadas: requieren sesión.
+const PROTECTED_PREFIXES = ['/app', '/muro']
 const LOGIN_PATH = '/ingresar'
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -18,7 +18,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.user = session?.user ?? null
   context.locals.session = session?.session ?? null
 
-  if (context.url.pathname.startsWith(PROTECTED_PREFIX) && !session) {
+  const isProtected = PROTECTED_PREFIXES.some((p) => context.url.pathname.startsWith(p))
+  if (isProtected && !session) {
     return context.redirect(LOGIN_PATH)
   }
 

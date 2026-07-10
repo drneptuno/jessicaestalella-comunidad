@@ -1,0 +1,205 @@
+---
+import AppHeader from '../../components/layout/AppHeader.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { createDb } from '../../lib/db'
+import { getVisibleProfiles, type Intencion } from '../../lib/db/queries'
+import { getServerEnv } from '../../lib/env'
+
+export const prerender = false
+
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/ingresar')
+
+const VALID: Intencion[] = ['socias', 'clientas', 'proveedoras', 'mentoria']
+const raw = Astro.url.searchParams.get('intencion')
+const intencion = VALID.includes(raw as Intencion) ? (raw as Intencion) : undefined
+const enviado = Astro.url.searchParams.get('presentada') === '1'
+
+const env = getServerEnv()
+const db = createDb(env.DATABASE_URL)
+const miembras = await getVisibleProfiles(db, intencion)
+
+const filtros: { id: Intencion | 'todas'; label: string }[] = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'socias', label: 'Busca socias' },
+  { id: 'clientas', label: 'Busca clientas' },
+  { id: 'proveedoras', label: 'Busca proveedoras' },
+  { id: 'mentoria', label: 'Mentoría' },
+]
+const intencionLabel: Record<Intencion, string> = {
+  socias: 'Busca socias',
+  clientas: 'Busca clientas',
+  proveedoras: 'Busca proveedoras',
+  mentoria: 'Mentoría',
+}
+const colores = ['secondary', 'accent', 'primary'] as const
+const iniciales = (n: string) =>
+  n.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
+---
+
+<BaseLayout title="El muro">
+  <AppHeader active="muro" />
+
+  <section class="bg-brand-primary px-6 pb-14 pt-8 text-brand-chalk">
+    <div class="mx-auto max-w-6xl">
+      <p class="mb-3 font-display text-xs font-[600] uppercase tracking-[0.22em] text-brand-accent-light">
+        El muro
+      </p>
+      <h1 class="max-w-2xl font-display text-3xl font-[800] leading-[1.08] sm:text-5xl">
+        Presentate y conectá con intención
+      </h1>
+      <p class="mt-4 max-w-xl font-body text-base leading-relaxed text-brand-chalk/75">
+        Cada tarjeta es una mujer de la comunidad: qué ofrece y qué está buscando. Filtrá por
+        lo que necesitás hoy.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-2">
+        {
+          filtros.map((f) => {
+            const activo = (f.id === 'todas' && !intencion) || f.id === intencion
+            const href = f.id === 'todas' ? '/muro' : `/muro?intencion=${f.id}`
+            return (
+              <a
+                href={href}
+                class:list={[
+                  'rounded-full px-4 py-2 font-display text-sm font-[600] transition-all',
+                  activo
+                    ? 'bg-brand-secondary text-white'
+                    : 'bg-white/10 text-brand-chalk/80 hover:bg-white/20 hover:text-brand-chalk',
+                ]}
+              >
+                {f.label}
+              </a>
+            )
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-brand-chalk px-6 py-14">
+    <div class="mx-auto max-w-6xl">
+      {
+        enviado && (
+          <div
+            class="mb-8 rounded-[10px] border border-brand-accent/30 bg-brand-accent/10 px-4 py-3 font-body text-sm text-brand-accent-ink"
+            role="status"
+          >
+            ¡Enviado! Le hicimos llegar tu presentación por correo. Si le interesa, te responde.
+          </div>
+        )
+      }
+
+      {
+        miembras.length === 0 ? (
+          <div class="rounded-[16px] border border-dashed border-border bg-surface p-10 text-center">
+            <h2 class="font-display text-xl font-[700] text-brand-primary">
+              {intencion ? 'Nadie con esa búsqueda por ahora' : 'Todavía no hay presentaciones'}
+            </h2>
+            <p class="mx-auto mt-2 max-w-sm font-body text-text-secondary">
+              {intencion
+                ? 'Probá con otro filtro o volvé a “Todas”.'
+                : 'Sé de las primeras: completá tu tarjeta para aparecer acá.'}
+            </p>
+            <a
+              href="/app/perfil"
+              class="mt-5 inline-block rounded-full bg-brand-secondary px-5 py-2.5 font-display text-sm font-[700] text-white transition-colors hover:bg-brand-secondary-ink"
+            >
+              Completar mi presentación →
+            </a>
+          </div>
+        ) : (
+          <div class="columns-1 gap-6 sm:columns-2 lg:columns-3 [&>*]:mb-6">
+            {miembras.map((m, i) => {
+              const color = colores[i % colores.length]
+              const esYo = m.userId === user.id
+              return (
+                <article class="break-inside-avoid rounded-[16px] border border-border bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                  <div
+                    class:list={[
+                      'h-1.5 rounded-t-[16px]',
+                      color === 'secondary' && 'bg-brand-secondary',
+                      color === 'accent' && 'bg-brand-accent',
+                      color === 'primary' && 'bg-brand-primary',
+                    ]}
+                  />
+                  <div class="p-6">
+                    <div class="flex items-center gap-4">
+                      <div
+                        class:list={[
+                          'flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-display text-base font-[700] text-white',
+                          color === 'secondary' && 'bg-brand-secondary',
+                          color === 'accent' && 'bg-brand-accent',
+                          color === 'primary' && 'bg-brand-primary',
+                        ]}
+                        aria-hidden="true"
+                      >
+                        {iniciales(m.name)}
+                      </div>
+                      <div class="min-w-0">
+                        <h2 class="truncate font-display text-lg font-[700] text-brand-primary">
+                          {m.name}
+                        </h2>
+                        <p class="font-body text-sm text-text-secondary">
+                          {[m.rubro, m.zona].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {m.bio && (
+                      <p class="mt-4 font-body text-sm leading-relaxed text-text-primary/85">{m.bio}</p>
+                    )}
+
+                    <dl class="mt-5 space-y-3">
+                      {m.ofrezco && (
+                        <div class="rounded-[10px] bg-brand-neutral/60 p-3">
+                          <dt class="font-display text-[11px] font-[700] uppercase tracking-[0.14em] text-brand-secondary-ink">
+                            Ofrezco
+                          </dt>
+                          <dd class="mt-1 font-body text-sm text-text-primary">{m.ofrezco}</dd>
+                        </div>
+                      )}
+                      {m.busco && (
+                        <div class="rounded-[10px] bg-brand-accent/10 p-3">
+                          <dt class="font-display text-[11px] font-[700] uppercase tracking-[0.14em] text-brand-accent-ink">
+                            Busco
+                          </dt>
+                          <dd class="mt-1 font-body text-sm text-text-primary">{m.busco}</dd>
+                        </div>
+                      )}
+                    </dl>
+
+                    <div class="mt-5 flex items-center justify-between gap-3">
+                      {m.intencion ? (
+                        <span class="rounded-full bg-brand-primary/5 px-3 py-1 font-display text-xs font-[600] text-brand-primary">
+                          {intencionLabel[m.intencion]}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                      {esYo ? (
+                        <a
+                          href="/app/perfil"
+                          class="rounded-full border border-brand-primary px-4 py-2 font-display text-sm font-[700] text-brand-primary transition-colors hover:bg-brand-primary hover:text-brand-chalk"
+                        >
+                          Sos vos · editar
+                        </a>
+                      ) : (
+                        <a
+                          href={`/muro/presentarme?a=${m.userId}`}
+                          class="rounded-full bg-brand-secondary px-4 py-2 font-display text-sm font-[700] text-white transition-colors hover:bg-brand-secondary-ink"
+                        >
+                          Presentarme →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

@@ -1,6 +1,8 @@
-import { eq } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import type { Db } from './index'
-import { profiles } from './schema'
+import { profiles, users } from './schema'
+
+export type Intencion = 'socias' | 'clientas' | 'proveedoras' | 'mentoria'
 
 export type ProfileData = {
   rubro: string | null
@@ -32,4 +34,56 @@ export async function upsertProfile(db: Db, userId: string, data: ProfileData): 
 /** ¿El perfil tiene lo mínimo para mostrarse con sentido? */
 export function isProfileComplete(p: { bio: string | null; ofrezco: string | null; busco: string | null } | null): boolean {
   return Boolean(p && p.bio && p.ofrezco && p.busco)
+}
+
+const publicColumns = {
+  userId: profiles.userId,
+  name: users.name,
+  rubro: profiles.rubro,
+  zona: profiles.zona,
+  bio: profiles.bio,
+  ofrezco: profiles.ofrezco,
+  busco: profiles.busco,
+  intencion: profiles.intencion,
+  instagram: profiles.instagram,
+  sitioWeb: profiles.sitioWeb,
+}
+
+/** Tarjetas del muro: solo perfiles opt-in (visible=true), sin exponer email. */
+export async function getVisibleProfiles(db: Db, intencion?: Intencion) {
+  const conds = [eq(profiles.visible, true)]
+  if (intencion) conds.push(eq(profiles.intencion, intencion))
+  return db
+    .select(publicColumns)
+    .from(profiles)
+    .innerJoin(users, eq(profiles.userId, users.id))
+    .where(and(...conds))
+    .orderBy(desc(profiles.updatedAt))
+}
+
+/** Perfil público de una miembra (para la pantalla "presentarme"). null si no es visible. */
+export async function getPublicProfile(db: Db, userId: string) {
+  return (
+    (
+      await db
+        .select(publicColumns)
+        .from(profiles)
+        .innerJoin(users, eq(profiles.userId, users.id))
+        .where(and(eq(profiles.userId, userId), eq(profiles.visible, true)))
+        .limit(1)
+    )[0] ?? null
+  )
+}
+
+/** Email de una miembra visible — solo para uso server-side (envío de intro). */
+export async function getVisibleMemberEmail(db: Db, userId: string): Promise<string | null> {
+  const row = (
+    await db
+      .select({ email: users.email, visible: profiles.visible })
+      .from(users)
+      .innerJoin(profiles, eq(profiles.userId, users.id))
+      .where(and(eq(users.id, userId), eq(profiles.visible, true)))
+      .limit(1)
+  )[0]
+  return row?.email ?? null
 }

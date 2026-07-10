@@ -9,6 +9,8 @@ export interface EmailMessage {
   subject: string
   text: string
   html: string
+  /** Para que la destinataria pueda responder directo a quien se presenta. */
+  replyTo?: string
 }
 
 export interface EmailSender {
@@ -40,6 +42,7 @@ class ResendEmailSender implements EmailSender {
         subject: m.subject,
         text: m.text,
         html: m.html,
+        reply_to: m.replyTo,
       }),
     })
     if (!res.ok) {
