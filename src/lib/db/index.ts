@@ -1,14 +1,15 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { neon } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/neon-http'
 import * as schema from './schema'
 
-// postgres.js funciona igual en Workers, en local y en un VPS: cero lock-in de
-// driver. La connection string es la única configuración.
+// Driver HTTP de Neon (neon-http): cada query es un request HTTP sin conexión
+// TCP persistente. Es lo indicado para Cloudflare Workers, donde una conexión
+// TCP de postgres.js se corta entre requests ("Network connection lost").
+// Better Auth no usa transacciones interactivas, así que neon-http alcanza.
 //
-// NOTA (F1): en el runtime de Cloudflare Workers las env vars llegan por el
-// binding del runtime (Astro.locals.runtime.env), NO por process.env. Cuando
-// conectemos queries desde páginas SSR, pasar la URL explícitamente a createDb()
-// desde el handler en vez de depender del singleton global.
+// Lock-in acotado a ESTE archivo: el SQL/esquema es Postgres puro y portable
+// (salida con pg_dump). Las migraciones (drizzle-kit) siguen usando postgres.js.
+
 function resolveDatabaseUrl(explicit?: string): string {
   const url = explicit ?? process.env.DATABASE_URL ?? import.meta.env.DATABASE_URL
   if (!url) {
@@ -18,8 +19,8 @@ function resolveDatabaseUrl(explicit?: string): string {
 }
 
 export function createDb(databaseUrl?: string) {
-  const client = postgres(resolveDatabaseUrl(databaseUrl), { max: 5 })
-  return drizzle(client, { schema })
+  const sql = neon(resolveDatabaseUrl(databaseUrl))
+  return drizzle(sql, { schema })
 }
 
 export type Db = ReturnType<typeof createDb>

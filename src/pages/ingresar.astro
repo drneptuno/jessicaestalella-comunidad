@@ -1,0 +1,152 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+export const prerender = false
+
+// Si ya hay sesión, al área privada.
+if (Astro.locals.user) {
+  return Astro.redirect('/app')
+}
+
+const params = Astro.url.searchParams
+const estado = params.get('estado')
+const error = params.get('error')
+
+const mensajes: Record<string, { tono: 'ok' | 'error'; texto: string }> = {
+  'revisa-email': {
+    tono: 'ok',
+    texto: 'Listo. Si tus datos son correctos, te enviamos un enlace de acceso a tu correo. Revisá tu bandeja (y el spam).',
+  },
+  invalido: { tono: 'error', texto: 'El email o el código no son correctos.' },
+  limite: { tono: 'error', texto: 'Demasiados intentos. Probá de nuevo en unos minutos.' },
+  datos: { tono: 'error', texto: 'Revisá los datos e intentá otra vez.' },
+}
+
+const aviso = estado === 'revisa-email' ? mensajes['revisa-email'] : error ? mensajes[error] : null
+---
+
+<BaseLayout title="Ingresar">
+  <div class="grid min-h-screen lg:grid-cols-2">
+    <!-- Lado marca -->
+    <section
+      class="relative hidden flex-col justify-between overflow-hidden bg-brand-primary p-12 text-brand-chalk lg:flex"
+    >
+      <div
+        class="pointer-events-none absolute -top-24 -right-20 h-72 w-72 rounded-full bg-brand-accent/20 blur-3xl"
+        aria-hidden="true"
+      >
+      </div>
+      <div
+        class="pointer-events-none absolute -bottom-28 -left-16 h-80 w-80 rounded-full bg-brand-secondary/15 blur-3xl"
+        aria-hidden="true"
+      >
+      </div>
+      <p class="relative font-display text-xl font-[800] tracking-tight">Capitana BSAS</p>
+      <div class="relative">
+        <p class="font-display text-xs font-[600] uppercase tracking-[0.22em] text-brand-accent-light">
+          Espacio privado
+        </p>
+        <h1 class="mt-3 font-display text-4xl font-[800] leading-[1.08]">
+          Un lugar para presentarte y conectar con intención.
+        </h1>
+        <p class="mt-4 max-w-sm font-body leading-relaxed text-brand-chalk/75">
+          Una comunidad curada de mujeres. Entrás con tu correo y el código que te compartimos.
+        </p>
+      </div>
+      <p class="relative font-body text-sm text-brand-chalk/50">Comunidad de Jessica Estalella</p>
+    </section>
+
+    <!-- Lado formulario -->
+    <section class="flex items-center justify-center bg-brand-chalk px-6 py-16">
+      <div class="w-full max-w-md">
+        <h2 class="font-display text-3xl font-[800] text-brand-primary">Ingresar</h2>
+        <p class="mt-2 font-body text-text-secondary">
+          Primera vez: usá tu correo y tu código de invitación.
+        </p>
+
+        {
+          aviso && (
+            <div
+              class:list={[
+                'mt-6 rounded-[10px] border px-4 py-3 font-body text-sm',
+                aviso.tono === 'ok'
+                  ? 'border-brand-accent/30 bg-brand-accent/10 text-brand-accent-ink'
+                  : 'border-brand-secondary/40 bg-brand-secondary/10 text-brand-secondary-ink',
+              ]}
+              role="status"
+            >
+              {aviso.texto}
+            </div>
+          )
+        }
+
+        <form method="POST" action="/api/ingresar" class="mt-7 space-y-4">
+          <div>
+            <label for="email" class="mb-1.5 block font-display text-sm font-[600] text-brand-primary">
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              autocomplete="email"
+              maxlength="200"
+              placeholder="vos@ejemplo.com"
+              class="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-body text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+            />
+          </div>
+
+          <div>
+            <label for="code" class="mb-1.5 block font-display text-sm font-[600] text-brand-primary">
+              Código de invitación
+            </label>
+            <input
+              type="text"
+              id="code"
+              name="code"
+              required
+              maxlength="40"
+              placeholder="XXXX-XXXX"
+              class="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-body uppercase tracking-widest text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+            />
+          </div>
+
+          <!-- Honeypot anti-bots (oculto) -->
+          <div class="absolute -left-[9999px]" aria-hidden="true">
+            <label>No completar<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full rounded-full bg-brand-secondary px-6 py-3 font-display text-base font-[700] text-white transition-colors hover:bg-brand-secondary-ink"
+          >
+            Entrar a la comunidad →
+          </button>
+        </form>
+
+        <div class="mt-8 border-t border-border pt-6">
+          <p class="font-body text-sm text-text-secondary">¿Ya sos parte? Pedí tu enlace de acceso:</p>
+          <form method="POST" action="/api/ingresar" class="mt-3 flex gap-2">
+            <input
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+              maxlength="200"
+              placeholder="vos@ejemplo.com"
+              aria-label="Correo para reingresar"
+              class="min-w-0 flex-1 rounded-[10px] border border-border bg-surface px-4 py-2.5 font-body text-sm text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+            />
+            <button
+              type="submit"
+              class="shrink-0 rounded-full border border-brand-primary px-4 py-2.5 font-display text-sm font-[700] text-brand-primary transition-colors hover:bg-brand-primary hover:text-brand-chalk"
+            >
+              Enviar enlace
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

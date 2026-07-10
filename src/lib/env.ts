@@ -14,6 +14,8 @@ export interface ServerEnv {
   BETTER_AUTH_URL: string
   RESEND_API_KEY?: string
   RESEND_FROM_EMAIL?: string
+  MAILERLITE_API_KEY?: string
+  MAILERLITE_GROUP_ID?: string
   PUBLIC_SITE_URL?: string
 }
 
@@ -47,6 +49,8 @@ export function getServerEnv(): ServerEnv {
       get('BETTER_AUTH_URL') ?? get('PUBLIC_SITE_URL') ?? 'http://localhost:4321',
     RESEND_API_KEY: get('RESEND_API_KEY'),
     RESEND_FROM_EMAIL: get('RESEND_FROM_EMAIL'),
+    MAILERLITE_API_KEY: get('MAILERLITE_API_KEY'),
+    MAILERLITE_GROUP_ID: get('MAILERLITE_GROUP_ID'),
     PUBLIC_SITE_URL: get('PUBLIC_SITE_URL'),
   }
 }

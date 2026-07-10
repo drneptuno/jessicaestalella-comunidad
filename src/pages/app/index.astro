@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+export const prerender = false
+
+// El middleware ya protege /app/*, pero reforzamos por las dudas.
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/ingresar')
+
+const primerNombre = user.name?.split(' ')[0] ?? 'compañera'
+
+const tarjetas = [
+  {
+    titulo: 'Completá tu presentación',
+    texto: 'Tu tarjeta es tu carta de presentación: contá qué ofrecés y qué estás buscando.',
+    color: 'secondary' as const,
+  },
+  {
+    titulo: 'Explorá el muro',
+    texto: 'Conocé a las demás mujeres de la comunidad y sus proyectos.',
+    color: 'accent' as const,
+    href: '/muro',
+  },
+  {
+    titulo: 'Conectá con intención',
+    texto: 'Las conexiones correctas pueden cambiar un proyecto. Presentate a quien te sume.',
+    color: 'primary' as const,
+  },
+]
+---
+
+<BaseLayout title="Inicio">
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-brand-primary">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+      <span class="font-display text-xl font-[800] tracking-tight text-brand-chalk">Capitana BSAS</span>
+      <nav class="flex items-center gap-6 font-display text-sm font-[600] text-brand-chalk/80">
+        <a href="/muro" class="transition-colors hover:text-brand-chalk">Muro</a>
+        <a href="/app" class="text-brand-chalk">Inicio</a>
+        <button id="salir" class="text-brand-accent-light transition-colors hover:text-brand-chalk">
+          Salir
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="bg-brand-primary px-6 pb-16 pt-8 text-brand-chalk">
+    <div class="mx-auto max-w-5xl">
+      <p class="font-display text-xs font-[600] uppercase tracking-[0.22em] text-brand-accent-light">
+        Espacio privado
+      </p>
+      <h1 class="mt-3 font-display text-4xl font-[800] leading-[1.08] sm:text-5xl">
+        Hola, {primerNombre} 👋
+      </h1>
+      <p class="mt-4 max-w-xl font-body leading-relaxed text-brand-chalk/75">
+        Bienvenida a la comunidad. Este espacio es para que te presentes, conozcas a otras
+        mujeres y generes conexiones que valgan la pena.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-brand-chalk px-6 py-12">
+    <div class="mx-auto grid max-w-5xl gap-6 sm:grid-cols-3">
+      {
+        tarjetas.map((t) => (
+          <a
+            href={t.href ?? '#'}
+            class="group rounded-[16px] border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+          >
+            <span
+              class:list={[
+                'mb-4 block h-1.5 w-10 rounded-full',
+                t.color === 'secondary' && 'bg-brand-secondary',
+                t.color === 'accent' && 'bg-brand-accent',
+                t.color === 'primary' && 'bg-brand-primary',
+              ]}
+            />
+            <h2 class="font-display text-lg font-[700] text-brand-primary">{t.titulo}</h2>
+            <p class="mt-2 font-body text-sm leading-relaxed text-text-secondary">{t.texto}</p>
+          </a>
+        ))
+      }
+    </div>
+    <p class="mx-auto mt-8 max-w-5xl font-body text-sm italic text-text-secondary">
+      Sesión iniciada como {user.email}. El perfil y el muro real llegan en las próximas fases.
+    </p>
+  </section>
+</BaseLayout>
+
+<script>
+  document.getElementById('salir')?.addEventListener('click', async () => {
+    await fetch('/api/auth/sign-out', { method: 'POST' })
+    window.location.href = '/ingresar'
+  })
+</script>

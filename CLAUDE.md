@@ -62,6 +62,16 @@ Cero código compartido entre repos; se conectan solo por URLs. El repo de curso
   resuelve la sesión a `Astro.locals.user/session` y protege `/app/*`.
 - `drizzle-kit` corre en Node y lee `.env.local` vía `loadEnvFile` en `drizzle.config.ts`
   (independiente del runtime del app).
+- **DB: driver `neon-http`** (`@neondatabase/serverless` + `drizzle-orm/neon-http`). En
+  Workers una conexión TCP de `postgres.js` se corta entre requests ("Network connection
+  lost"); neon-http hace cada query por HTTP. No soporta transacciones interactivas (Better
+  Auth no las usa). El lock-in queda acotado a `src/lib/db/index.ts`; el SQL es Postgres puro.
+  Las **migraciones** siguen con `postgres.js` (Node), sin problema.
+- **CSRF:** Astro valida `Origin` en POST de formularios (`checkOrigin`, activo). Los forms
+  del sitio andan solos; para probar por `curl` hay que mandar `-H "Origin: <site>"`.
+- **Email:** Resend = transaccional (magic link). **MailerLite = marketing**: al canjear la
+  invitación se suma la miembra a un grupo (`src/lib/marketing/`) y corren las
+  automatizaciones de Jessica. Nunca bloquea el acceso si falla.
 
 ## Identidad visual (heredada del ecosistema)
 
