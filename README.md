@@ -7,9 +7,10 @@ directorio de la comunidad y recursos.
 - **Stack:** Astro 6 (SSR) + Better Auth + Drizzle + Postgres (Neon) + Resend, en Cloudflare.
 - **Identidad visual:** heredada del ecosistema (azul marino / naranja / verde agua, League
   Spartan + Libre Baskerville).
-- **Documentos:** [`CLAUDE.md`](./CLAUDE.md) (convenciones y seguridad) ·
-  [`PLAN.md`](./PLAN.md) (fases) · [`docs/PROMPT-ARRANQUE.md`](./docs/PROMPT-ARRANQUE.md)
-  (prompt para iniciar la construcción).
+- **Documentación:** empezá por [`docs/README.md`](./docs/README.md) (hub con todo el
+  contexto cruzado). Además: [`CLAUDE.md`](./CLAUDE.md) (convenciones y seguridad) ·
+  [`PLAN.md`](./PLAN.md) (fases) · [`ROADMAP.md`](./ROADMAP.md) (estado) ·
+  [`sessions/`](./sessions/) (bitácora).
 
 > Parte del ecosistema `jessicaestalella.com`. Repos hermanos: web principal (Astro + Sanity)
 > y cursos (Next.js, producto pago). Cero código compartido; se conectan por URLs.

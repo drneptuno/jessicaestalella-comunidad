@@ -1,5 +1,9 @@
 # CLAUDE.md — jessicaestalella-academia
 
+> **Para el contexto completo del proyecto, leé [`docs/README.md`](./docs/README.md)** — hub
+> con producto, arquitectura, acceso/auth, base de datos, emails y operaciones, todo cruzado.
+> Este archivo es el resumen de convenciones y reglas de trabajo.
+
 ## De qué se trata
 
 **Comunidad privada "Capitana BSAS"** de Jessica Estalella
