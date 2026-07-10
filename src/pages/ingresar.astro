@@ -50,7 +50,7 @@ const aviso = estado === 'revisa-email' ? mensajes['revisa-email'] : error ? men
           Un lugar para presentarte y conectar con intención.
         </h1>
         <p class="mt-4 max-w-sm font-body leading-relaxed text-brand-chalk/75">
-          Una comunidad curada de mujeres. Entrás con tu correo y el código que te compartimos.
+          Una comunidad curada de mujeres. Entrás con tu correo; te mandamos un enlace de acceso.
         </p>
       </div>
       <p class="relative font-body text-sm text-brand-chalk/50">Comunidad de Jessica Estalella</p>
@@ -61,7 +61,7 @@ const aviso = estado === 'revisa-email' ? mensajes['revisa-email'] : error ? men
       <div class="w-full max-w-md">
         <h2 class="font-display text-3xl font-[800] text-brand-primary">Ingresar</h2>
         <p class="mt-2 font-body text-text-secondary">
-          Primera vez: usá tu correo y tu código de invitación.
+          Ingresá con tu correo y te mandamos un enlace de acceso.
         </p>
 
         {
@@ -80,6 +80,7 @@ const aviso = estado === 'revisa-email' ? mensajes['revisa-email'] : error ? men
           )
         }
 
+        <!-- Camino principal: solo email (compra / ya es miembra) -->
         <form method="POST" action="/api/ingresar" class="mt-7 space-y-4">
           <div>
             <label for="email" class="mb-1.5 block font-display text-sm font-[600] text-brand-primary">
@@ -97,21 +98,6 @@ const aviso = estado === 'revisa-email' ? mensajes['revisa-email'] : error ? men
             />
           </div>
 
-          <div>
-            <label for="code" class="mb-1.5 block font-display text-sm font-[600] text-brand-primary">
-              Código de invitación
-            </label>
-            <input
-              type="text"
-              id="code"
-              name="code"
-              required
-              maxlength="40"
-              placeholder="XXXX-XXXX"
-              class="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-body uppercase tracking-widest text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
-            />
-          </div>
-
           <!-- Honeypot anti-bots (oculto) -->
           <div class="absolute -left-[9999px]" aria-hidden="true">
             <label>No completar<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
@@ -121,31 +107,56 @@ const aviso = estado === 'revisa-email' ? mensajes['revisa-email'] : error ? men
             type="submit"
             class="w-full rounded-full bg-brand-secondary px-6 py-3 font-display text-base font-[700] text-white transition-colors hover:bg-brand-secondary-ink"
           >
-            Entrar a la comunidad →
+            Enviarme el enlace de acceso →
           </button>
         </form>
 
-        <div class="mt-8 border-t border-border pt-6">
-          <p class="font-body text-sm text-text-secondary">¿Ya sos parte? Pedí tu enlace de acceso:</p>
-          <form method="POST" action="/api/ingresar" class="mt-3 flex gap-2">
-            <input
-              type="email"
-              name="email"
-              required
-              autocomplete="email"
-              maxlength="200"
-              placeholder="vos@ejemplo.com"
-              aria-label="Correo para reingresar"
-              class="min-w-0 flex-1 rounded-[10px] border border-border bg-surface px-4 py-2.5 font-body text-sm text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
-            />
+        <!-- Camino secundario: código de invitación (alta manual) -->
+        <details class="mt-8 border-t border-border pt-6">
+          <summary class="cursor-pointer font-display text-sm font-[600] text-brand-primary">
+            ¿Tenés un código de invitación?
+          </summary>
+          <form method="POST" action="/api/ingresar" class="mt-4 space-y-4">
+            <div>
+              <label for="email2" class="mb-1.5 block font-display text-sm font-[600] text-brand-primary">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                id="email2"
+                name="email"
+                required
+                autocomplete="email"
+                maxlength="200"
+                placeholder="vos@ejemplo.com"
+                class="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-body text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+              />
+            </div>
+            <div>
+              <label for="code" class="mb-1.5 block font-display text-sm font-[600] text-brand-primary">
+                Código de invitación
+              </label>
+              <input
+                type="text"
+                id="code"
+                name="code"
+                required
+                maxlength="40"
+                placeholder="XXXX-XXXX"
+                class="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-body uppercase tracking-widest text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+              />
+            </div>
+            <div class="absolute -left-[9999px]" aria-hidden="true">
+              <label>No completar<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+            </div>
             <button
               type="submit"
-              class="shrink-0 rounded-full border border-brand-primary px-4 py-2.5 font-display text-sm font-[700] text-brand-primary transition-colors hover:bg-brand-primary hover:text-brand-chalk"
+              class="w-full rounded-full border border-brand-primary px-6 py-3 font-display text-base font-[700] text-brand-primary transition-colors hover:bg-brand-primary hover:text-brand-chalk"
             >
-              Enviar enlace
+              Entrar con mi código
             </button>
           </form>
-        </div>
+        </details>
       </div>
     </section>
   </div>

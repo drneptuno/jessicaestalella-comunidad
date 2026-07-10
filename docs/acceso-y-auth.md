@@ -4,14 +4,21 @@
 
 ## Modelo de acceso: dos puertas
 
-1. **Grupo de MailerLite (automático — F1.5, pendiente).** La fuente de verdad de quién puede
-   entrar. Una **compra** en el repo `cursos` dispara una automatización que suma el email a un
-   grupo de MailerLite. Al primer ingreso se verifica que el email esté en ese grupo.
+1. **Grupo de MailerLite (automático — F1.5, implementado).** La fuente de verdad de quién
+   puede entrar. Una **compra** en el repo `cursos` dispara una automatización que suma el
+   email a un grupo de MailerLite. Al **ingresar con solo el email**, si es la primera vez se
+   verifica que esté (activo) en ese grupo (`emailAllowedByGroup` en `src/lib/marketing/`); si
+   está, se crea la usuaria y se manda el magic link.
+   → **Falta cargar `MAILERLITE_API_KEY` + `MAILERLITE_GROUP_ID`** para activarlo; sin ellas el
+   gate queda cerrado (solo entran por código o quienes ya son usuarias).
 2. **Código de invitación (manual — F1, hecho).** Vía curada para altas fuera de compra
-   (invitadas, pruebas). Código de un solo uso, ligado a un email.
+   (invitadas, pruebas). Código de un solo uso, ligado a un email. En `/ingresar` es la opción
+   secundaria ("¿Tenés un código de invitación?").
 
 Ambas puertas conviven. En todos los casos, el acceso efectivo se materializa con un
-**magic link** al email (prueba que el correo es de quien dice).
+**magic link** al email (prueba que el correo es de quien dice). El chequeo de grupo se hace
+**solo en el primer ingreso**; luego la usuaria reingresa por magic link (revocar acceso = dar
+de baja la usuaria, futuro F5).
 
 ## Flujo
 

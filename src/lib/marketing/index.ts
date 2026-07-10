@@ -37,3 +37,39 @@ export async function addToCommunity(env: ServerEnv, sub: Subscriber): Promise<v
     throw new Error(`MailerLite respondió ${res.status}`)
   }
 }
+
+/**
+ * ¿El email pertenece (activo) al grupo que habilita el acceso? Es el gate de
+ * F1.5: una compra suma el email a ese grupo vía automatización, y estar ahí da
+ * acceso a la comunidad. Sin API key o sin grupo configurado → false (gate
+ * cerrado; solo entran por código o quienes ya son usuarias).
+ */
+export async function emailAllowedByGroup(
+  env: ServerEnv,
+  email: string,
+): Promise<{ allowed: boolean; name: string | null }> {
+  if (!env.MAILERLITE_API_KEY || !env.MAILERLITE_GROUP_ID) {
+    return { allowed: false, name: null }
+  }
+
+  const res = await fetch(
+    `https://connect.mailerlite.com/api/subscribers/${encodeURIComponent(email)}`,
+    { headers: { Authorization: `Bearer ${env.MAILERLITE_API_KEY}` } },
+  )
+
+  if (res.status === 404) return { allowed: false, name: null }
+  if (!res.ok) throw new Error(`MailerLite respondió ${res.status}`)
+
+  const json = (await res.json()) as {
+    data?: {
+      status?: string
+      fields?: { name?: string | null }
+      groups?: { id?: string | number }[]
+    }
+  }
+  const data = json.data
+  const groups = Array.isArray(data?.groups) ? data.groups : []
+  const inGroup = groups.some((g) => String(g.id) === String(env.MAILERLITE_GROUP_ID))
+  const allowed = inGroup && data?.status === 'active'
+  return { allowed, name: data?.fields?.name ?? null }
+}

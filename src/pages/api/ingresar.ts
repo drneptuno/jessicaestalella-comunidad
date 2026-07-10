@@ -5,7 +5,7 @@ import { getAuth } from '../../lib/auth'
 import { createDb } from '../../lib/db'
 import { invitations, users } from '../../lib/db/schema'
 import { getServerEnv } from '../../lib/env'
-import { addToCommunity } from '../../lib/marketing'
+import { addToCommunity, emailAllowedByGroup } from '../../lib/marketing'
 import {
   hashCode,
   normalizeCode,
@@ -107,8 +107,28 @@ export const POST: APIRoute = async ({ request }) => {
     } catch {
       /* no crítico */
     }
+  } else {
+    // ── Sin código ────────────────────────────────────────────────────────
+    // Reingreso (usuaria existente) o PRIMER ingreso por grupo de MailerLite:
+    // si el email está en el grupo habilitado (compra), la damos de alta.
+    const existente = (
+      await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1)
+    )[0]
+
+    if (!existente) {
+      try {
+        const { allowed, name } = await emailAllowedByGroup(env, email)
+        if (allowed) {
+          await ensureUser(db, email, name ?? email.split('@')[0])
+        }
+      } catch {
+        // Si MailerLite falla, no creamos usuaria: no se filtra nada, y como no
+        // existe, el magic link con disableSignUp no manda (respuesta genérica).
+      }
+    }
+    // Si existía → reingreso normal (el magic link de abajo se encarga).
+    // No revelamos en ningún caso si el email pertenece o no a la comunidad.
   }
-  // Sin código = reingreso: no revelamos si el email existe o no.
 
   // Magic link tanto para canje como para reingreso. Con disableSignUp, si la
   // usuaria no existe Better Auth no manda nada; respondemos igual (genérico).

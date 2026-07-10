@@ -6,7 +6,7 @@ Estado vivo del proyecto. El detalle de cada fase está en `PLAN.md`.
 |------|-------------|--------|
 | F0 | Fundaciones (scaffold Astro 6 SSR, Tailwind, tokens, Drizzle) | ✅ hecho |
 | F1 | Auth por código de invitación (Better Auth + invitations) | ✅ hecho (login + canje + magic link + /app, probado E2E) |
-| F1.5 | Gate por grupo de MailerLite (acceso automático por compra) | ⬜ pendiente |
+| F1.5 | Gate por grupo de MailerLite (acceso automático por compra) | ✅ implementado (falta cargar API key + group id para activarlo) |
 | F2 | Perfil de miembro (tarjeta de presentación editable) | ✅ hecho (probado E2E) |
 | F3 | Muro real (perfiles visibles + filtros + presentarme) | ✅ hecho (probado E2E) |
 | F4 | Recursos + dashboard de bienvenida | ⬜ pendiente |
