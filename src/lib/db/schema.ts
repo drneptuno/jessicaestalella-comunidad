@@ -20,6 +20,7 @@ export const invitationStatus = pgEnum('invitation_status', [
   'redeemed',
   'revoked',
 ])
+export const intencion = pgEnum('intencion', ['socias', 'clientas', 'proveedoras', 'mentoria'])
 
 // ── Usuarias y auth (gestionadas por Better Auth) ─────────────────────────
 export const users = pgTable('users', {
@@ -113,6 +114,26 @@ export const invitations = pgTable(
   },
   (t) => [index('invitations_email_idx').on(t.email)],
 )
+
+// ── Perfil / tarjeta de presentación ──────────────────────────────────────
+// El corazón del producto: qué ofrece y qué busca cada miembra. Relación 1-1
+// con users. `visible` es el opt-in para aparecer en el muro.
+export const profiles = pgTable('profiles', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  rubro: text('rubro'),
+  zona: text('zona'),
+  bio: text('bio'),
+  ofrezco: text('ofrezco'),
+  busco: text('busco'),
+  intencion: intencion('intencion'),
+  instagram: text('instagram'),
+  sitioWeb: text('sitio_web'),
+  avatarUrl: text('avatar_url'),
+  visible: boolean('visible').notNull().default(false),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
 
 // ── Auditoría (acciones de admin) ─────────────────────────────────────────
 export const auditLogs = pgTable(

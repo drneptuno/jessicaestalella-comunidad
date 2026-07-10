@@ -8,6 +8,13 @@
       "when": 1783716150483,
       "tag": "0000_smooth_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1783719021774,
+      "tag": "0001_crazy_silver_samurai",
+      "breakpoints": true
     }
   ]
 }

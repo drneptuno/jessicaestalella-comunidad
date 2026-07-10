@@ -61,6 +61,23 @@ como nombre interno del repo. Ver diferenciales acordados abajo.
   sin filtrar información; rutas protegidas inaccesibles sin sesión; rate limit activo.
   `/security-review` en verde.
 
+## F1.5 — Gate por grupo de MailerLite (unifica el ecosistema)
+
+El acceso real al producto viene de una **compra** (repo cursos) que, vía automatización,
+suma el email a un **grupo de MailerLite**. Ese grupo es la fuente de verdad de quién puede
+entrar. MailerLite además corre el circuito de bienvenida/marketing que Jessica ya tiene
+(hoy manual en WordPress).
+
+- Ingreso por **email solo**: al primer ingreso, verificar contra la API de MailerLite si el
+  email está en el grupo habilitado (`GET /api/subscribers/{email}` → grupos). Si está →
+  crear usuaria + magic link. Si no → respuesta genérica.
+- Los **códigos de invitación** (F1) quedan como vía **manual/curada** (invitadas, pruebas,
+  altas fuera de compra). Dos puertas conviviendo.
+- Solo se consulta MailerLite en el **primer ingreso** (luego la usuaria existe y reingresa
+  por magic link) → sin dependencia de MailerLite en cada login.
+- **Aceptación:** email en el grupo entra sin código; email fuera del grupo no; el código
+  manual sigue funcionando; sin fugas de si el email existe o no.
+
 ## F2 — Perfil de miembro
 
 - Extender esquema: `profile` (nombre, bio, proyecto, links, foto/avatar, flags de

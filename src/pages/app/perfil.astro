@@ -1,0 +1,140 @@
+---
+import AppHeader from '../../components/layout/AppHeader.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { createDb } from '../../lib/db'
+import { getProfile } from '../../lib/db/queries'
+import { getServerEnv } from '../../lib/env'
+
+export const prerender = false
+
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/ingresar')
+
+const env = getServerEnv()
+const db = createDb(env.DATABASE_URL)
+const perfil = await getProfile(db, user.id)
+
+const params = Astro.url.searchParams
+const guardado = params.get('guardado') === '1'
+const error = params.get('error')
+
+const intenciones = [
+  { v: '', l: 'Sin especificar' },
+  { v: 'socias', l: 'Busco socias' },
+  { v: 'clientas', l: 'Busco clientas' },
+  { v: 'proveedoras', l: 'Busco proveedoras' },
+  { v: 'mentoria', l: 'Ofrezco / busco mentoría' },
+]
+
+const inputCls =
+  'w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-body text-text-primary outline-none transition-colors focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30'
+const labelCls = 'mb-1.5 block font-display text-sm font-[600] text-brand-primary'
+---
+
+<BaseLayout title="Mi presentación">
+  <AppHeader active="perfil" />
+
+  <section class="bg-brand-chalk px-6 py-10">
+    <div class="mx-auto max-w-2xl">
+      <h1 class="font-display text-3xl font-[800] text-brand-primary">Mi presentación</h1>
+      <p class="mt-2 font-body text-text-secondary">
+        Esta es tu carta de presentación en el muro. Contá quién sos, qué ofrecés y qué estás
+        buscando: así las conexiones pasan con intención.
+      </p>
+
+      {
+        guardado && (
+          <div
+            class="mt-6 rounded-[10px] border border-brand-accent/30 bg-brand-accent/10 px-4 py-3 font-body text-sm text-brand-accent-ink"
+            role="status"
+          >
+            ¡Listo! Tu presentación se guardó.
+          </div>
+        )
+      }
+      {
+        error && (
+          <div
+            class="mt-6 rounded-[10px] border border-brand-secondary/40 bg-brand-secondary/10 px-4 py-3 font-body text-sm text-brand-secondary-ink"
+            role="status"
+          >
+            Revisá los datos e intentá otra vez.
+          </div>
+        )
+      }
+
+      <form method="POST" action="/api/perfil" class="mt-7 space-y-5">
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="rubro" class={labelCls}>Rubro / a qué te dedicás</label>
+            <input type="text" id="rubro" name="rubro" maxlength="80" value={perfil?.rubro ?? ''}
+              placeholder="Diseño de marca" class={inputCls} />
+          </div>
+          <div>
+            <label for="zona" class={labelCls}>Zona</label>
+            <input type="text" id="zona" name="zona" maxlength="80" value={perfil?.zona ?? ''}
+              placeholder="CABA / Remoto" class={inputCls} />
+          </div>
+        </div>
+
+        <div>
+          <label for="bio" class={labelCls}>Sobre vos</label>
+          <textarea id="bio" name="bio" maxlength="600" rows="3" placeholder="Una o dos líneas sobre vos y tu proyecto."
+            class={inputCls}>{perfil?.bio ?? ''}</textarea>
+        </div>
+
+        <div>
+          <label for="ofrezco" class={labelCls}>Ofrezco</label>
+          <textarea id="ofrezco" name="ofrezco" maxlength="400" rows="2" placeholder="Qué podés aportar a la comunidad."
+            class={inputCls}>{perfil?.ofrezco ?? ''}</textarea>
+        </div>
+
+        <div>
+          <label for="busco" class={labelCls}>Busco</label>
+          <textarea id="busco" name="busco" maxlength="400" rows="2" placeholder="Qué estás necesitando hoy."
+            class={inputCls}>{perfil?.busco ?? ''}</textarea>
+        </div>
+
+        <div>
+          <label for="intencion" class={labelCls}>Estoy buscando principalmente</label>
+          <select id="intencion" name="intencion" class={inputCls}>
+            {
+              intenciones.map((i) => (
+                <option value={i.v} selected={(perfil?.intencion ?? '') === i.v}>
+                  {i.l}
+                </option>
+              ))
+            }
+          </select>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="instagram" class={labelCls}>Instagram</label>
+            <input type="text" id="instagram" name="instagram" maxlength="100" value={perfil?.instagram ?? ''}
+              placeholder="tuusuario" class={inputCls} />
+          </div>
+          <div>
+            <label for="sitioWeb" class={labelCls}>Sitio web</label>
+            <input type="text" id="sitioWeb" name="sitioWeb" maxlength="200" value={perfil?.sitioWeb ?? ''}
+              placeholder="tusitio.com" class={inputCls} />
+          </div>
+        </div>
+
+        <label class="flex items-start gap-3 rounded-[10px] border border-border bg-surface p-4">
+          <input type="checkbox" name="visible" checked={perfil?.visible ?? false}
+            class="mt-1 h-4 w-4 accent-[var(--color-brand-secondary)]" />
+          <span class="font-body text-sm text-text-primary">
+            <span class="font-display font-[600] text-brand-primary">Mostrar mi tarjeta en el muro.</span>
+            <br />Si lo dejás sin marcar, tu presentación queda guardada pero no aparece para las demás.
+          </span>
+        </label>
+
+        <button type="submit"
+          class="w-full rounded-full bg-brand-secondary px-6 py-3 font-display text-base font-[700] text-white transition-colors hover:bg-brand-secondary-ink sm:w-auto">
+          Guardar presentación
+        </button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
