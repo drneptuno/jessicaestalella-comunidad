@@ -15,18 +15,23 @@ comunidad y recursos. Identidad visual de Jessica. Stack Astro SSR + Better Auth
 - **Stack:** Astro 6 (SSR, últimas versiones) + Better Auth + Drizzle + Postgres (Neon) + Cloudflare + Resend.
 - **Acceso:** email + código de invitación (curado, sin pagos en la plataforma).
 - **MVP v1:** dashboard de bienvenida, perfil, directorio/comunidad, recursos.
-- **Dominio:** por confirmar con Jessi → variable `PUBLIC_SITE_URL` (candidatos:
-  `academia.` o `comunidad.jessicaestalella.com`).
+- **Dominio:** `capitanabsas.jessicaestalella.com` (nombre público de la comunidad:
+  **Capitana BSAS**). En dev, `PUBLIC_SITE_URL=http://localhost:4321`.
+- **Modelo de código:** **uno por persona, ligado a su email, un solo uso.** ✅
+- **Sesión:** el código canjea la invitación y crea la sesión; **reingresos por magic link
+  al email** (sin contraseñas = menos superficie de ataque). ✅
 
-## Decisiones a confirmar antes de F1
+## Reencuadre de foco (importante)
 
-- **Modelo de código:** ¿un código por persona (ligado a su email, un solo uso) o códigos
-  de campaña con cupo/expiración? → recomendado: **uno por persona, ligado a email**.
-- **Sesión:** ¿el código es solo la primera vez (luego magic link / contraseña) o se pide
-  siempre? → recomendado: **código canjea una invitación y crea la sesión; reingresos por
-  magic link al email**. (Sin contraseñas = menos superficie de ataque.)
-- **Recursos:** ¿archivos propios (requiere almacenamiento tipo R2) o solo enlaces/embeds?
-  → recomendado v1: **enlaces/embeds**, sin almacenamiento propio.
+El producto NO es una "academia/cursos": es una **comunidad donde las mujeres se
+presentan y conectan con intención**. El corazón es el **perfil como carta de presentación**
+y el **directorio**; recursos y kit digital son secundarios. La palabra "academia" queda solo
+como nombre interno del repo. Ver diferenciales acordados abajo.
+
+## Decisiones a confirmar
+
+- **Recursos:** ¿archivos propios (R2) o solo enlaces/embeds? → recomendado v1: **enlaces/embeds**.
+- **Diferenciales v1** (ver sección al final): confirmar cuáles entran en el MVP.
 
 ---
 
@@ -66,13 +71,21 @@ comunidad y recursos. Identidad visual de Jessica. Stack Astro SSR + Better Auth
 - **Aceptación:** la miembro completa y edita su perfil; los cambios persisten; campos
   privados nunca se exponen en API ni HTML.
 
-## F3 — Directorio / comunidad
+## F3 — Muro / tablero de presentaciones (estilo Padlet)
 
-- Listado paginado de miembros con perfil visible; búsqueda/filtro básico (nombre, proyecto).
-- Vista de detalle de un perfil (solo campos visibles).
+Corazón del producto. En vez de un listado formal, un **muro visual de tarjetas**: cada
+miembra tiene su tarjeta de presentación (= su perfil renderizado como card).
+
+- Grid responsive de tarjetas (masonry/columnas), cada una con foto/inicial, nombre, rubro,
+  y un resumen de "qué ofrezco / qué busco".
+- Click en una tarjeta → vista ampliada con el perfil completo (solo campos visibles) y el
+  botón "presentarme" (contacto con intención).
+- Filtros por rubro, zona e intención (busca socias / clientas / proveedoras / mentoría).
+- (Opcional v1) reacción simple tipo "me interesa" para dar señales de vida.
+- Secciones/columnas por rubro curadas por Jessica (opcional, fast-follow).
 - Queries en `lib/db/queries.ts`; nunca exponer PII no opt-in.
-- **Aceptación:** el directorio lista solo perfiles opt-in; búsqueda funciona; sin fugas de
-  campos privados; paginación estable.
+- **Aceptación:** el muro muestra solo tarjetas opt-in; filtros funcionan; abrir una tarjeta
+  no filtra campos privados; responsive y AA.
 
 ## F4 — Recursos + Dashboard de bienvenida
 
@@ -97,6 +110,30 @@ comunidad y recursos. Identidad visual de Jessica. Stack Astro SSR + Better Auth
   secretos expuestos; auditoría sin hallazgos altos/moderados.
 
 ---
+
+## Diferenciales vs. el referente (Boosting Women)
+
+Modelo mental: un **muro tipo Padlet** de tarjetas de presentación, pero privado, curado y
+con la identidad de Jessica. El referente (Boosting Women) es un directorio + recursos
+estático; Padlet es un muro genérico sin identidad ni intención. Combinamos lo mejor de los
+dos y le sumamos foco. (⭐ = recomendado para v1):
+
+1. ⭐ **Perfil con intención estructurada** — no solo bio: campos "qué ofrezco" y "qué
+   busco/necesito" + rubro + ubicación. El perfil deja de ser vitrina y habilita el match.
+2. ⭐ **Buscador por intención** — filtrar por rubro, zona y por "busca socias / clientas /
+   proveedoras / mentoría", no solo por nombre.
+3. ⭐ **Contacto con intención** — botón "presentarme" que envía una intro por email (Resend)
+   sin exponer datos de contacto. Privacidad + acción real.
+4. ⭐ **Identidad y calidez de Jessica** — editorial y cuidada, lo opuesto a la plantilla
+   genérica; es el activo que el referente no puede copiar.
+5. **Muro de bienvenidas** — al entrar, la nueva se presenta y aparece en un feed reciente.
+   Da vida y sensación de comunidad activa vs. listado estático. (fast-follow post-v1)
+6. **Destacadas rotativas** — Jessica destaca perfiles; la home se siente curada. (fast-follow)
+7. **Onboarding guiado + % de perfil** — empuja a completar (perfiles completos = directorio útil).
+8. **Privacidad granular opt-in** por campo — confianza; mejor que exponer todo por defecto.
+
+> v1 recomendado: 1 + 2 + 3 + 4 + 8 (con 7 como parte natural del flujo de perfil).
+> 5 y 6 quedan como fast-follows una vez que hay masa crítica de perfiles.
 
 ## Riesgos / notas
 

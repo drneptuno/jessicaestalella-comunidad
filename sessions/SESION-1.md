@@ -24,6 +24,12 @@ Arrancar el repo de la academia con la fundación documental y el scaffold de F0
 - Falta crear Neon DB real y cargar `DATABASE_URL` para probar `db:studio`/migraciones.
 
 ## Verificación F0
-- [ ] `npm run dev` levanta y el placeholder muestra la identidad.
-- [ ] `npm run typecheck` pasa.
-- [ ] `npm run build` pasa.
+- [x] `npm run dev` levanta (200) y el placeholder muestra la identidad.
+- [x] `npm run typecheck` pasa (0 errores; agregado `@types/node`).
+- [x] `npm run build` pasa (output server, adapter Cloudflare).
+- [ ] `db:studio` conecta a Neon → pendiente de crear la DB y cargar `DATABASE_URL`.
+
+## Nota de seguridad (npm audit)
+7 vulnerabilidades (2 low, 5 moderate), todas en `esbuild` (transitivo vía Astro/Vite)
+y **solo del dev server** (no afectan prod). El fix exige `astro@7` (breaking); no se
+fuerza. Es la misma cadena del repo Astro principal. Revisar al subir de major de Astro.

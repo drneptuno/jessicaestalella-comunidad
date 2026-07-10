@@ -2,11 +2,15 @@
 
 ## De qué se trata
 
-**Espacio privado de comunidad / academia** de Jessica Estalella Psicóloga.
-Es un área de miembros, curada por invitación: la persona ingresa con su **email + un
-código de invitación** que Jessica (o el equipo) le entregó, y accede a un espacio para
-conocer a otras integrantes, completar su perfil, explorar la comunidad y aprovechar
-recursos.
+**Comunidad privada "Capitana BSAS"** de Jessica Estalella
+(`capitanabsas.jessicaestalella.com`).
+
+Es un espacio curado por invitación **donde las mujeres se presentan y conectan con
+intención**. La persona ingresa con su **email + un código de invitación** (uno por persona,
+ligado a su email); en reingresos, magic link. El **corazón del producto es el perfil como
+carta de presentación** y el **directorio** de la comunidad; los recursos son secundarios.
+
+> "Academia" quedó solo como nombre interno del repo/carpeta. El producto NO es cursos.
 
 Inspiración de producto: la comunidad de Boosting Women (login por email + código →
 dashboard de bienvenida, perfil, directorio, recursos). **La identidad visual NO se copia**:
