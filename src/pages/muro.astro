@@ -1,0 +1,264 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+// MOCKUP de F3 — el muro de presentaciones estilo Padlet, con el diferencial:
+// cada tarjeta muestra "Ofrezco / Busco" (intención estructurada) + "Presentarme".
+// Datos de ejemplo; sin base de datos todavía.
+export const prerender = true
+
+type Intencion = 'socias' | 'clientas' | 'proveedoras' | 'mentoria'
+
+interface Miembra {
+  nombre: string
+  rubro: string
+  zona: string
+  bio: string
+  ofrezco: string
+  busco: string
+  intencion: Intencion
+  color: 'primary' | 'secondary' | 'accent'
+}
+
+const miembras: Miembra[] = [
+  {
+    nombre: 'Valentina Ríos',
+    rubro: 'Diseño de marca',
+    zona: 'CABA',
+    bio: 'Estudio de branding para emprendimientos liderados por mujeres. Diez años haciendo que las marcas se vean como lo que son adentro.',
+    ofrezco: 'Identidad visual, naming y sistemas de marca.',
+    busco: 'Socia comercial para escalar el estudio.',
+    intencion: 'socias',
+    color: 'secondary',
+  },
+  {
+    nombre: 'Camila Ferrer',
+    rubro: 'Nutrición',
+    zona: 'La Plata',
+    bio: 'Nutricionista con enfoque en salud hormonal femenina. Consultas online y presenciales.',
+    ofrezco: 'Planes de alimentación y talleres para comunidades.',
+    busco: 'Clientas y espacios donde dar charlas.',
+    intencion: 'clientas',
+    color: 'accent',
+  },
+  {
+    nombre: 'Lucía Domínguez',
+    rubro: 'Contenido & redes',
+    zona: 'Rosario',
+    bio: 'Ayudo a marcas chicas a sonar como personas. Estrategia de contenido sin humo.',
+    ofrezco: 'Estrategia editorial y gestión de redes.',
+    busco: 'Proveedora de diseño y edición de video.',
+    intencion: 'proveedoras',
+    color: 'primary',
+  },
+  {
+    nombre: 'Mariana Costa',
+    rubro: 'Finanzas personales',
+    zona: 'Córdoba',
+    bio: 'Contadora reconvertida en educadora financiera. Que la plata deje de ser un tema tabú.',
+    ofrezco: 'Mentorías 1:1 y talleres de finanzas para emprendedoras.',
+    busco: 'Sumarme como mentora a más comunidades.',
+    intencion: 'mentoria',
+    color: 'accent',
+  },
+  {
+    nombre: 'Sofía Núñez',
+    rubro: 'Fotografía',
+    zona: 'CABA',
+    bio: 'Fotógrafa de producto y retrato para emprendimientos. Luz natural, cero postales acartonadas.',
+    ofrezco: 'Sesiones de producto y personal branding.',
+    busco: 'Clientas en zona norte y colaboraciones.',
+    intencion: 'clientas',
+    color: 'secondary',
+  },
+  {
+    nombre: 'Paula Herrera',
+    rubro: 'Desarrollo web',
+    zona: 'Remoto',
+    bio: 'Programadora full-stack. Construyo tiendas y webs que no se caen el día del lanzamiento.',
+    ofrezco: 'Desarrollo de e-commerce y sitios a medida.',
+    busco: 'Socia de diseño para armar dupla estable.',
+    intencion: 'socias',
+    color: 'primary',
+  },
+]
+
+const filtros: { id: Intencion | 'todas'; label: string }[] = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'socias', label: 'Busca socias' },
+  { id: 'clientas', label: 'Busca clientas' },
+  { id: 'proveedoras', label: 'Busca proveedoras' },
+  { id: 'mentoria', label: 'Mentoría' },
+]
+
+const intencionLabel: Record<Intencion, string> = {
+  socias: 'Busca socias',
+  clientas: 'Busca clientas',
+  proveedoras: 'Busca proveedoras',
+  mentoria: 'Mentoría',
+}
+
+const iniciales = (nombre: string) =>
+  nombre
+    .split(' ')
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+---
+
+<BaseLayout title="El muro">
+  <!-- Nav -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-brand-primary">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div class="flex items-baseline gap-3">
+        <span class="font-display text-xl font-[800] tracking-tight text-brand-chalk">
+          Capitana BSAS
+        </span>
+        <span class="hidden font-body text-sm text-brand-accent-light italic sm:inline">
+          comunidad
+        </span>
+      </div>
+      <nav class="flex items-center gap-6 font-display text-sm font-[600] text-brand-chalk/80">
+        <a href="#" class="text-brand-chalk">Muro</a>
+        <a href="#" class="transition-colors hover:text-brand-chalk">Mi presentación</a>
+        <a href="#" class="hidden transition-colors hover:text-brand-chalk sm:inline">Recursos</a>
+        <a href="#" class="text-brand-accent-light transition-colors hover:text-brand-chalk">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Intro -->
+  <section class="bg-brand-primary px-6 pb-14 pt-8 text-brand-chalk">
+    <div class="mx-auto max-w-6xl">
+      <p class="mb-3 font-display text-xs font-[600] uppercase tracking-[0.22em] text-brand-accent-light">
+        El muro
+      </p>
+      <h1 class="max-w-2xl font-display text-3xl font-[800] leading-[1.08] sm:text-5xl">
+        Presentate y conectá con intención
+      </h1>
+      <p class="mt-4 max-w-xl font-body text-base leading-relaxed text-brand-chalk/75">
+        Cada tarjeta es una mujer de la comunidad. No es solo quién es: es
+        <span class="text-brand-chalk">qué ofrece</span> y
+        <span class="text-brand-chalk">qué está buscando</span>. Filtrá por lo que necesitás hoy.
+      </p>
+
+      <!-- Filtros por intención (el diferencial) -->
+      <div class="mt-8 flex flex-wrap gap-2">
+        {
+          filtros.map((f, i) => (
+            <button
+              class:list={[
+                'rounded-full px-4 py-2 font-display text-sm font-[600] transition-all',
+                i === 0
+                  ? 'bg-brand-secondary text-white'
+                  : 'bg-white/10 text-brand-chalk/80 hover:bg-white/20 hover:text-brand-chalk',
+              ]}
+            >
+              {f.label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Muro de tarjetas (masonry) -->
+  <section class="bg-brand-chalk px-6 py-14">
+    <div class="mx-auto max-w-6xl columns-1 gap-6 sm:columns-2 lg:columns-3 [&>*]:mb-6">
+      {
+        miembras.map((m, i) => (
+          <article
+            class="card break-inside-avoid rounded-[16px] border border-border bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            style={`animation-delay:${i * 70}ms`}
+          >
+            {/* Lomo de color por miembra (guiño Padlet, con la marca) */}
+            <div
+              class:list={[
+                'h-1.5 rounded-t-[16px]',
+                m.color === 'secondary' && 'bg-brand-secondary',
+                m.color === 'accent' && 'bg-brand-accent',
+                m.color === 'primary' && 'bg-brand-primary',
+              ]}
+            />
+            <div class="p-6">
+              <div class="flex items-center gap-4">
+                <div
+                  class:list={[
+                    'flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-display text-base font-[700] text-white',
+                    m.color === 'secondary' && 'bg-brand-secondary',
+                    m.color === 'accent' && 'bg-brand-accent',
+                    m.color === 'primary' && 'bg-brand-primary',
+                  ]}
+                  aria-hidden="true"
+                >
+                  {iniciales(m.nombre)}
+                </div>
+                <div class="min-w-0">
+                  <h2 class="truncate font-display text-lg font-[700] text-brand-primary">
+                    {m.nombre}
+                  </h2>
+                  <p class="font-body text-sm text-text-secondary">
+                    {m.rubro} · {m.zona}
+                  </p>
+                </div>
+              </div>
+
+              <p class="mt-4 font-body text-sm leading-relaxed text-text-primary/85">{m.bio}</p>
+
+              {/* Ofrezco / Busco — intención estructurada */}
+              <dl class="mt-5 space-y-3">
+                <div class="rounded-[10px] bg-brand-neutral/60 p-3">
+                  <dt class="font-display text-[11px] font-[700] uppercase tracking-[0.14em] text-brand-secondary-ink">
+                    Ofrezco
+                  </dt>
+                  <dd class="mt-1 font-body text-sm text-text-primary">{m.ofrezco}</dd>
+                </div>
+                <div class="rounded-[10px] bg-brand-accent/10 p-3">
+                  <dt class="font-display text-[11px] font-[700] uppercase tracking-[0.14em] text-brand-accent-ink">
+                    Busco
+                  </dt>
+                  <dd class="mt-1 font-body text-sm text-text-primary">{m.busco}</dd>
+                </div>
+              </dl>
+
+              <div class="mt-5 flex items-center justify-between gap-3">
+                <span class="rounded-full bg-brand-primary/5 px-3 py-1 font-display text-xs font-[600] text-brand-primary">
+                  {intencionLabel[m.intencion]}
+                </span>
+                <button class="rounded-full bg-brand-secondary px-4 py-2 font-display text-sm font-[700] text-white transition-colors hover:bg-brand-secondary-ink">
+                  Presentarme →
+                </button>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="mx-auto mt-10 max-w-6xl font-body text-sm italic text-text-secondary">
+      Mockup del muro (F3) · datos de ejemplo · sin base de datos todavía.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .card {
+    opacity: 0;
+    animation: rise 0.5s ease-out forwards;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>
