@@ -1,11 +1,11 @@
-# Prompt de arranque — Academia
+# Prompt de arranque — Comunidad Capitana BSAS
 
 Pegá esto para iniciar la construcción en una sesión nueva (dentro de
-`jessicaestalella-academia/`).
+`jessicaestalella-comunidad/`).
 
 ---
 
-Vamos a arrancar la **academia**: el espacio privado de comunidad de Jessica Estalella.
+Vamos a arrancar la **comunidad Capitana BSAS**: el espacio privado de Jessica Estalella.
 Ya están escritos `CLAUDE.md`, `PLAN.md`, `README.md` y `.env.local.example` en este repo.
 
 **Antes de escribir código, leé `CLAUDE.md` y `PLAN.md` completos y respetalos** (seguridad

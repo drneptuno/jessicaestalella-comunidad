@@ -1,4 +1,4 @@
-# ROADMAP — Academia
+# ROADMAP — Comunidad (Capitana BSAS)
 
 Estado vivo del proyecto. El detalle de cada fase está en `PLAN.md`.
 

@@ -1,4 +1,4 @@
-# CLAUDE.md — jessicaestalella-academia
+# CLAUDE.md — jessicaestalella-comunidad
 
 > **Para el contexto completo del proyecto, leé [`docs/README.md`](./docs/README.md)** — hub
 > con producto, arquitectura, acceso/auth, base de datos, emails y operaciones, todo cruzado.
@@ -14,16 +14,16 @@ intención**. La persona ingresa con su **email + un código de invitación** (u
 ligado a su email); en reingresos, magic link. El **corazón del producto es el perfil como
 carta de presentación** y el **directorio** de la comunidad; los recursos son secundarios.
 
-> "Academia" quedó solo como nombre interno del repo/carpeta. El producto NO es cursos.
+> Repo/carpeta: `jessicaestalella-comunidad`. El producto NO es una academia ni cursos.
 
 Inspiración de producto: la comunidad de Boosting Women (login por email + código →
 dashboard de bienvenida, perfil, directorio, recursos). **La identidad visual NO se copia**:
-la academia usa la identidad de Jessica (ver más abajo), no el fucsia del referente.
+la comunidad usa la identidad de Jessica (ver más abajo), no el fucsia del referente.
 
 **División de repos del ecosistema (regla):**
 
 ```
-jessicaestalella.com            cursos.jessicaestalella.com        academia (este repo)
+jessicaestalella.com            cursos.jessicaestalella.com        comunidad (este repo)
   Astro 6 + Sanity                Next.js 16 + Better Auth           Astro 6 SSR + Better Auth
   contenido anónimo, SEO          producto pago (checkout)           comunidad privada por invitación
   Cloudflare (static)             Cloudflare (OpenNext)              Cloudflare (SSR)

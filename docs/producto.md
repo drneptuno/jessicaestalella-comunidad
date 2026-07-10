@@ -8,8 +8,8 @@ Comunidad **privada y curada** de mujeres (emprendedoras, profesionales) de Jess
 El objetivo es que puedan **presentarse y conectar con intención**: conocerse, mostrar sus
 proyectos y generar oportunidades reales (socias, clientas, proveedoras, mentoría).
 
-**No es** una academia ni una plataforma de cursos. "academia" quedó solo como nombre interno
-de la carpeta/repo. El producto pago (cursos) vive en otro repo; comprar ahí es lo que —a
+**No es** una academia ni una plataforma de cursos. El producto pago (cursos) vive en otro
+repo; comprar ahí es lo que —a
 futuro— habilita el acceso a esta comunidad.
 
 ## Foco y modelo mental

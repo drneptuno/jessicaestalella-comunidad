@@ -1,4 +1,4 @@
-# PLAN — Academia (comunidad privada)
+# PLAN — Comunidad Capitana BSAS
 
 Plan por fases. Cada fase se entrega funcionando, verificada y commiteada. No se pasa a la
 siguiente sin cumplir los criterios de aceptación. Detalle de convenciones en `CLAUDE.md`.
@@ -25,8 +25,7 @@ comunidad y recursos. Identidad visual de Jessica. Stack Astro SSR + Better Auth
 
 El producto NO es una "academia/cursos": es una **comunidad donde las mujeres se
 presentan y conectan con intención**. El corazón es el **perfil como carta de presentación**
-y el **directorio**; recursos y kit digital son secundarios. La palabra "academia" queda solo
-como nombre interno del repo. Ver diferenciales acordados abajo.
+y el **directorio**; recursos y kit digital son secundarios. Ver diferenciales acordados abajo.
 
 ## Decisiones a confirmar
 

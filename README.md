@@ -1,6 +1,6 @@
-# jessicaestalella-academia
+# jessicaestalella-comunidad
 
-Espacio privado de comunidad / academia de **Jessica Estalella Psicóloga**.
+Espacio privado de comunidad **Capitana BSAS** de **Jessica Estalella Psicóloga**.
 Acceso curado por **email + código de invitación**. Post-login: dashboard, perfil,
 directorio de la comunidad y recursos.
 
