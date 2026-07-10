@@ -51,6 +51,18 @@ Cero código compartido entre repos; se conectan solo por URLs. El repo de curso
 - Postgres puro (salida: `pg_dump`), driver `postgres.js` portable.
 - El adapter de Cloudflare es capa de build, no código de la app.
 
+## Notas del runtime (Astro 6 + Cloudflare) — leer
+
+- **Env/secretos NO se leen con `Astro.locals.runtime.env`** (eliminado en Astro 6).
+  Se leen con `import { env } from 'cloudflare:workers'`. Todo pasa por `getServerEnv()`
+  en `src/lib/env.ts` (que además cae a `process.env`/`import.meta.env` fuera de Workers).
+- **Better Auth se crea por-request** con `getAuth(getServerEnv())` (memoizado por
+  `DATABASE_URL`): en Workers no hay singleton global con secretos al importar el módulo.
+- El endpoint `src/pages/api/auth/[...all].ts` monta Better Auth; el `src/middleware.ts`
+  resuelve la sesión a `Astro.locals.user/session` y protege `/app/*`.
+- `drizzle-kit` corre en Node y lee `.env.local` vía `loadEnvFile` en `drizzle.config.ts`
+  (independiente del runtime del app).
+
 ## Identidad visual (heredada del ecosistema)
 
 Mismos tokens que la web principal. **Usar siempre `var(--color-*)`, nunca hex directos.**

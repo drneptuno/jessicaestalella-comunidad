@@ -5,7 +5,7 @@ Estado vivo del proyecto. El detalle de cada fase está en `PLAN.md`.
 | Fase | Descripción | Estado |
 |------|-------------|--------|
 | F0 | Fundaciones (scaffold Astro 6 SSR, Tailwind, tokens, Drizzle, placeholder) | ✅ hecho (falta conectar Neon) |
-| F1 | Auth por código de invitación (Better Auth + invitations) | ⬜ pendiente |
+| F1 | Auth por código de invitación (Better Auth + invitations) | 🚧 en curso (schema + auth booteando; falta login UI + canje) |
 | F2 | Perfil de miembro | ⬜ pendiente |
 | F3 | Directorio / comunidad | ⬜ pendiente |
 | F4 | Recursos + dashboard de bienvenida | ⬜ pendiente |
