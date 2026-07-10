@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+
+// Placeholder de F0: verifica que identidad (tokens + fuentes) carga bien.
+// El dashboard real llega en F4.
+export const prerender = false
+---
+
+<BaseLayout title="Bienvenida">
+  <section
+    class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-brand-primary px-6 py-20 text-center"
+  >
+    <!-- Acento decorativo -->
+    <div
+      class="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-brand-accent/20 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-brand-secondary/15 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="relative z-10 w-full max-w-2xl rounded-[16px] bg-brand-chalk/95 p-10 shadow-2xl sm:p-14">
+      <p
+        class="mb-4 inline-block rounded-full bg-brand-accent/10 px-4 py-1.5 font-display text-xs font-[600] tracking-[0.18em] text-brand-accent-ink uppercase"
+      >
+        Espacio privado
+      </p>
+
+      <h1 class="font-display text-4xl leading-[1.05] font-[800] text-brand-primary sm:text-5xl">
+        Academia
+        <span class="mt-1 block text-brand-secondary-ink">Jessica Estalella</span>
+      </h1>
+
+      <p class="mx-auto mt-6 max-w-md font-body text-base leading-relaxed text-text-secondary">
+        La comunidad está en construcción. Muy pronto vas a poder ingresar con tu correo y tu
+        código de invitación para conocer a otras mujeres, descubrir sus proyectos y aprovechar
+        los recursos.
+      </p>
+
+      <div class="mt-8 flex items-center justify-center gap-3">
+        <span class="h-2 w-2 rounded-full bg-brand-secondary"></span>
+        <span class="h-2 w-2 rounded-full bg-brand-accent"></span>
+        <span class="h-2 w-2 rounded-full bg-brand-primary"></span>
+      </div>
+
+      <p class="mt-6 font-body text-sm italic text-text-secondary">
+        Fase F0 · fundaciones — verificando identidad visual.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

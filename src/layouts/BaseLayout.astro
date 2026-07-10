@@ -1,0 +1,51 @@
+---
+import '../styles/globals.css'
+// Fuentes self-hosted (Fontsource) — sin dependencia de Google Fonts.
+import '@fontsource/league-spartan/400.css'
+import '@fontsource/league-spartan/500.css'
+import '@fontsource/league-spartan/600.css'
+import '@fontsource/league-spartan/700.css'
+import '@fontsource/league-spartan/800.css'
+import '@fontsource/libre-baskerville/400.css'
+import '@fontsource/libre-baskerville/400-italic.css'
+import '@fontsource/libre-baskerville/700.css'
+
+interface Props {
+  title: string
+  description?: string
+  /** Espacio privado: por defecto NO indexable. */
+  noindex?: boolean
+}
+
+const {
+  title,
+  description = 'Espacio privado de comunidad de Jessica Estalella.',
+  noindex = true,
+} = Astro.props
+
+const siteTitle = `${title} | Academia · Jessica Estalella`
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{siteTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <slot name="head" />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-primary focus:px-5 focus:py-2 focus:font-display focus:text-sm focus:text-white"
+    >
+      Saltar al contenido
+    </a>
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

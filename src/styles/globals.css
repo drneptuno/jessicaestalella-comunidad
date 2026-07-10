@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* ─── Tipografía ─────────────────────────────────────────────
+     Primaria:   League Spartan    → titulares, headings, CTAs
+     Secundaria: Libre Baskerville → cuerpo de texto, párrafos
+     Terciaria:  Libre Baskerville Italic → citas, destacados
+  ──────────────────────────────────────────────────────────── */
+  --font-display: "League Spartan", sans-serif;
+  --font-body: "Libre Baskerville", serif;
+
+  /* ─── Paleta de marca ─────────────────────────────────────────
+     Azul marino   #203f62  → color primario, headings, nav
+     Naranja       #ff7e21  → CTAs, highlights, hover states
+     Verde agua    #0c96a9  → acento secundario, badges, links
+     Cremita       #efe7df  → fondos de secciones alternadas
+     Blanco tiza   #f6f5f3  → fondo base de la página
+  ──────────────────────────────────────────────────────────── */
+  --color-brand-primary:   #203f62;
+  --color-brand-secondary: #ff7e21;
+  --color-brand-accent:    #0c96a9;
+  --color-brand-neutral:   #efe7df;
+  --color-brand-chalk:     #f6f5f3;
+  --color-brand-dark:      #152a42;
+
+  /* ─── Variantes accesibles (solo texto) ───────────────────────
+     El naranja y el verde agua de marca no alcanzan 4.5:1 como
+     texto chico sobre fondos claros. Estas variantes MÁS OSCURAS
+     se usan ÚNICAMENTE para texto sobre cremita/tiza/blanco.
+     La marca no cambia: los originales siguen para fondos, CTAs
+     y elementos grandes. Afinables por la diseñadora.
+       secondary-ink sobre cremita ≈ 5:1 · accent-ink sobre blanco ≈ 5:1
+  ──────────────────────────────────────────────────────────── */
+  --color-brand-secondary-ink: #a04800;
+  --color-brand-accent-ink:    #0a7a8a;
+  /* Variante MÁS CLARA del verde agua para texto chico sobre navy
+     (primary/dark): el accent original da ~3:1 ahí. ≈ 7:1 sobre navy. */
+  --color-brand-accent-light:  #5ec6d4;
+
+  /* ─── Semánticos ──────────────────────────────────────────── */
+  --color-background:      var(--color-brand-chalk);
+  --color-surface:         #ffffff;
+  --color-text-primary:    var(--color-brand-dark);
+  --color-text-secondary:  #5a6a7a;
+  --color-border:          #ddd8d0;
+
+  /* ─── Pesos tipográficos ──────────────────────────────────── */
+  --font-weight-500: 500;
+  --font-weight-600: 600;
+  --font-weight-700: 700;
+  --font-weight-800: 800;
+
+  /* ─── Radios ──────────────────────────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-full: 9999px;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+/* League Spartan tiene mayor densidad visual — ajustamos letter-spacing */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+}

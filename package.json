@@ -1,0 +1,49 @@
+{
+  "name": "jessicaestalella-academia",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro build && wrangler dev",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "deploy": "astro build && wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^13.6.1",
+    "@astrojs/react": "^5.0.7",
+    "@fontsource/league-spartan": "^5.2.8",
+    "@fontsource/libre-baskerville": "^5.2.10",
+    "@tailwindcss/vite": "^4.3.0",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^6.4.3",
+    "better-auth": "^1.6.23",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "resend": "^6.12.4",
+    "tailwindcss": "^4.3.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/node": "^22.20.1",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.97.0"
+  },
+  "overrides": {
+    "vite": "^7"
+  }
+}
