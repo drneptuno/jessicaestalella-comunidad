@@ -1,6 +1,6 @@
 ---
 interface Props {
-  active?: 'inicio' | 'muro' | 'perfil'
+  active?: 'inicio' | 'muro' | 'perfil' | 'recursos'
 }
 const { active } = Astro.props
 const link = (id: string) =>
@@ -15,6 +15,7 @@ const link = (id: string) =>
     <nav class="flex items-center gap-6 font-display text-sm font-[600]">
       <a href="/app" class={link('inicio')}>Inicio</a>
       <a href="/muro" class={link('muro')}>Muro</a>
+      <a href="/app/recursos" class={link('recursos')}>Recursos</a>
       <a href="/app/perfil" class={link('perfil')}>Mi presentación</a>
       <button id="salir" class="text-brand-accent-light transition-colors hover:text-brand-chalk">
         Salir

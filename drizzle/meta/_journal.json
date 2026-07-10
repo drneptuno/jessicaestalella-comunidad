@@ -15,6 +15,13 @@
       "when": 1783719021774,
       "tag": "0001_crazy_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783721057370,
+      "tag": "0002_stormy_skrulls",
+      "breakpoints": true
     }
   ]
 }

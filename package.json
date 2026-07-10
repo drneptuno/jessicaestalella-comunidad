@@ -17,6 +17,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "invitar": "node --env-file-if-exists=.env.local --import tsx scripts/crear-invitacion.ts",
+    "recurso": "node --env-file-if-exists=.env.local --import tsx scripts/crear-recurso.ts",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

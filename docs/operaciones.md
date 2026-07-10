@@ -14,6 +14,7 @@ npm run db:generate  # generar migración desde el schema
 npm run db:migrate   # aplicar migraciones a la base
 npm run db:studio    # UI de Drizzle
 npm run invitar -- <email> ["Nombre"] [díasVigencia]   # crea una invitación
+npm run recurso -- <url> "<título>" ["categoría"] ["descripción"] [orden]   # agrega un recurso
 ```
 
 ## Crear una invitación (alta manual)
@@ -23,6 +24,14 @@ npm run invitar -- valen@ejemplo.com "Valentina Ríos" 30
 ```
 Imprime el **código en texto plano una sola vez** (en la DB queda solo el hash) para
 compartírselo a la persona. Vence en los días indicados (default 30).
+
+## Cargar un recurso (sección Recursos)
+
+```
+npm run recurso -- https://ejemplo.com/guia "Guía de precios" "Guías" "Cómo poner precio" 1
+```
+Solo acepta URLs `http(s)`. Se agrupan por categoría en `/app/recursos`. Hasta que exista el
+panel admin (F5), esta es la vía para curar recursos.
 
 ## Variables de entorno
 

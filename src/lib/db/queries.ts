@@ -1,6 +1,6 @@
-import { and, desc, eq } from 'drizzle-orm'
+import { and, asc, desc, eq } from 'drizzle-orm'
 import type { Db } from './index'
-import { profiles, users } from './schema'
+import { profiles, resources, users } from './schema'
 
 export type Intencion = 'socias' | 'clientas' | 'proveedoras' | 'mentoria'
 
@@ -86,4 +86,33 @@ export async function getVisibleMemberEmail(db: Db, userId: string): Promise<str
       .limit(1)
   )[0]
   return row?.email ?? null
+}
+
+export type Resource = typeof resources.$inferSelect
+
+/** Recursos ordenados por categoría y orden manual. */
+export async function getResources(db: Db): Promise<Resource[]> {
+  return db
+    .select()
+    .from(resources)
+    .orderBy(asc(resources.category), asc(resources.sort), desc(resources.createdAt))
+}
+
+/** Agrupa recursos por categoría, preservando el orden. */
+export function groupByCategory(items: Resource[]): { category: string; items: Resource[] }[] {
+  const grupos: { category: string; items: Resource[] }[] = []
+  for (const item of items) {
+    let grupo = grupos.find((g) => g.category === item.category)
+    if (!grupo) {
+      grupo = { category: item.category, items: [] }
+      grupos.push(grupo)
+    }
+    grupo.items.push(item)
+  }
+  return grupos
+}
+
+/** Solo permitimos abrir enlaces http(s) (evita javascript:, data:, etc.). */
+export function isSafeUrl(url: string): boolean {
+  return /^https?:\/\//i.test(url)
 }

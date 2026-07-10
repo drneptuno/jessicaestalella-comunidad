@@ -9,7 +9,7 @@ Estado vivo del proyecto. El detalle de cada fase está en `PLAN.md`.
 | F1.5 | Gate por grupo de MailerLite (acceso automático por compra) | ✅ implementado (falta cargar API key + group id para activarlo) |
 | F2 | Perfil de miembro (tarjeta de presentación editable) | ✅ hecho (probado E2E) |
 | F3 | Muro real (perfiles visibles + filtros + presentarme) | ✅ hecho (probado E2E) |
-| F4 | Recursos + dashboard de bienvenida | ⬜ pendiente |
+| F4 | Recursos + dashboard de bienvenida | ✅ hecho (probado E2E) |
 | F5 | Admin de invitaciones | ⬜ pendiente |
 | F6 | Deploy + hardening | ⬜ pendiente |
 

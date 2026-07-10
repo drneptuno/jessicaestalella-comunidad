@@ -135,6 +135,23 @@ export const profiles = pgTable('profiles', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+// ── Recursos (herramientas, guías, materiales) ────────────────────────────
+// v1: enlaces/embeds curados por Jessica (sin almacenamiento propio). Se
+// agrupan por `category` en la página de recursos.
+export const resources = pgTable(
+  'resources',
+  {
+    id: text('id').primaryKey(),
+    title: text('title').notNull(),
+    description: text('description'),
+    url: text('url').notNull(),
+    category: text('category').notNull().default('General'),
+    sort: integer('sort').notNull().default(0),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('resources_category_idx').on(t.category)],
+)
+
 // ── Auditoría (acciones de admin) ─────────────────────────────────────────
 export const auditLogs = pgTable(
   'audit_logs',

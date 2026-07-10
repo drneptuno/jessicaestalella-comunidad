@@ -1,0 +1,80 @@
+---
+import AppHeader from '../../components/layout/AppHeader.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { createDb } from '../../lib/db'
+import { getResources, groupByCategory, isSafeUrl } from '../../lib/db/queries'
+import { getServerEnv } from '../../lib/env'
+
+export const prerender = false
+
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/ingresar')
+
+const env = getServerEnv()
+const db = createDb(env.DATABASE_URL)
+const grupos = groupByCategory((await getResources(db)).filter((r) => isSafeUrl(r.url)))
+---
+
+<BaseLayout title="Recursos">
+  <AppHeader active="recursos" />
+
+  <section class="bg-brand-primary px-6 pb-14 pt-8 text-brand-chalk">
+    <div class="mx-auto max-w-5xl">
+      <p class="mb-3 font-display text-xs font-[600] uppercase tracking-[0.22em] text-brand-accent-light">
+        Recursos
+      </p>
+      <h1 class="max-w-2xl font-display text-3xl font-[800] leading-[1.08] sm:text-5xl">
+        Herramientas, guías y materiales
+      </h1>
+      <p class="mt-4 max-w-xl font-body leading-relaxed text-brand-chalk/75">
+        Una selección para acompañar tu proyecto. Se va sumando con el tiempo.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-brand-chalk px-6 py-12">
+    <div class="mx-auto max-w-5xl">
+      {
+        grupos.length === 0 ? (
+          <div class="rounded-[16px] border border-dashed border-border bg-surface p-10 text-center">
+            <h2 class="font-display text-xl font-[700] text-brand-primary">Todavía no hay recursos</h2>
+            <p class="mx-auto mt-2 max-w-sm font-body text-text-secondary">
+              Muy pronto vas a encontrar acá herramientas y materiales seleccionados.
+            </p>
+          </div>
+        ) : (
+          <div class="space-y-12">
+            {grupos.map((grupo) => (
+              <div>
+                <h2 class="mb-5 font-display text-xl font-[700] text-brand-primary">
+                  {grupo.category}
+                </h2>
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {grupo.items.map((r) => (
+                    <a
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="group flex h-full flex-col rounded-[16px] border border-border bg-surface p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      <span class="mb-4 block h-1.5 w-10 rounded-full bg-brand-accent" />
+                      <h3 class="font-display text-lg font-[700] text-brand-primary">{r.title}</h3>
+                      {r.description && (
+                        <p class="mt-2 flex-1 font-body text-sm leading-relaxed text-text-secondary">
+                          {r.description}
+                        </p>
+                      )}
+                      <span class="mt-4 font-display text-sm font-[700] text-brand-secondary-ink">
+                        Abrir →
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
