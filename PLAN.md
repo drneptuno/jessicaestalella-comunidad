@@ -111,11 +111,12 @@ miembra tiene su tarjeta de presentación (= su perfil renderizado como card).
 - **Aceptación:** dashboard refleja el estado real (p. ej. "completá tu perfil" si falta);
   recursos navegables; responsive AA.
 
-## F5 — Admin de invitaciones
+## F5 — Panel de administración
 
-- Panel mínimo (rol admin): generar códigos, ver estado, dar de baja miembros.
+- Panel (rol admin): invitaciones (generar/revocar), miembras (baja/alta), recursos (CRUD).
 - Todo registrado en `audit_logs`. RBAC servidor.
 - **Aceptación:** solo admin accede; generar/revocar funciona y queda auditado.
+- **Plan detallado de implementación:** [`docs/plan-f5-admin.md`](./docs/plan-f5-admin.md).
 
 ## F6 — Deploy y hardening
 

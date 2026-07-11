@@ -20,6 +20,11 @@ estilo Padlet; desde ahí puede "presentarse" a otra por email. El acceso es por
 5. [`emails-y-marketing.md`](./emails-y-marketing.md) — Resend + MailerLite.
 6. [`operaciones.md`](./operaciones.md) — comandos, variables, deploy, pendientes.
 
+## Planes de fases
+
+- [`plan-f5-admin.md`](./plan-f5-admin.md) — plan de implementación del **panel de
+  administración (F5)**: aún sin empezar.
+
 ## Documentos vivos (raíz del repo)
 
 | Documento | Para qué |
