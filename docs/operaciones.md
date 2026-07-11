@@ -15,7 +15,23 @@ npm run db:migrate   # aplicar migraciones a la base
 npm run db:studio    # UI de Drizzle
 npm run invitar -- <email> ["Nombre"] [díasVigencia]   # crea una invitación
 npm run recurso -- <url> "<título>" ["categoría"] ["descripción"] [orden]   # agrega un recurso
+npm run seed:demo    # carga datos de ejemplo para la vista previa
 ```
+
+## Vista previa sin login (SOLO dev)
+
+Para recorrer todas las pantallas del área privada sin autenticarte:
+
+1. En `.env.local`: `PREVIEW_BYPASS_AUTH=true`
+2. `npm run seed:demo` (usuaria de ejemplo + miembras visibles + recursos)
+3. `npm run dev` → entrá a `/app`, `/muro`, `/app/perfil`, `/app/recursos`
+
+El bypass inyecta una usuaria ficticia. **Solo funciona en dev** (`import.meta.env.DEV`);
+en el build de producción la rama queda muerta, así que es imposible activarlo en prod.
+Para volver al login real, poné `PREVIEW_BYPASS_AUTH=` (vacío).
+
+> Tip: si ves errores 500 / "Network connection lost" en dev, suele ser que quedaron
+> varios `astro dev` corriendo a la vez. Cerralos (`pkill -f 'astro dev'`) y arrancá uno solo.
 
 ## Crear una invitación (alta manual)
 

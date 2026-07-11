@@ -17,6 +17,8 @@ export interface ServerEnv {
   MAILERLITE_API_KEY?: string
   MAILERLITE_GROUP_ID?: string
   PUBLIC_SITE_URL?: string
+  /** SOLO dev: bypass de auth para vista previa. Ignorado en prod. */
+  PREVIEW_BYPASS_AUTH?: string
 }
 
 type Source = Record<string, string | undefined> | undefined
@@ -52,5 +54,6 @@ export function getServerEnv(): ServerEnv {
     MAILERLITE_API_KEY: get('MAILERLITE_API_KEY'),
     MAILERLITE_GROUP_ID: get('MAILERLITE_GROUP_ID'),
     PUBLIC_SITE_URL: get('PUBLIC_SITE_URL'),
+    PREVIEW_BYPASS_AUTH: get('PREVIEW_BYPASS_AUTH'),
   }
 }

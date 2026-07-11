@@ -1,6 +1,7 @@
 import { defineMiddleware } from 'astro:middleware'
 import { getAuth } from './lib/auth'
 import { getServerEnv } from './lib/env'
+import { PREVIEW_USER, PREVIEW_USER_ID } from './lib/preview'
 
 // Zonas privadas: requieren sesión.
 const PROTECTED_PREFIXES = ['/app', '/muro']
@@ -12,7 +13,21 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next()
   }
 
-  const auth = getAuth(getServerEnv())
+  const env = getServerEnv()
+
+  // VISTA PREVIA (solo dev): inyecta una usuaria ficticia y saltea la auth.
+  // import.meta.env.DEV es false en el build de prod → rama muerta en producción.
+  if (import.meta.env.DEV && env.PREVIEW_BYPASS_AUTH === 'true') {
+    context.locals.user = { ...PREVIEW_USER }
+    context.locals.session = {
+      id: 'preview',
+      userId: PREVIEW_USER_ID,
+      expiresAt: new Date(Date.now() + 86_400_000),
+    }
+    return next()
+  }
+
+  const auth = getAuth(env)
   const session = await auth.api.getSession({ headers: context.request.headers })
 
   context.locals.user = session?.user ?? null
