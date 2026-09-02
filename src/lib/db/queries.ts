@@ -1,7 +1,12 @@
 import { and, asc, desc, eq } from 'drizzle-orm'
 import type { Db } from './index'
-import { profiles, resources, users } from './schema'
+import { communityMembers, profiles, resources, users } from './schema'
 
+// ⚠️ INVARIANTE: toda lectura de perfiles se une a `community_members` con
+// status 'active'. La base es compartida con `cursos`, así que existen filas en
+// `users` (y potencialmente en `profiles`) de personas que NO son miembras.
+// El muro no puede mostrarlas aunque el gate de ruta falle: esto es la segunda
+// capa, deliberadamente redundante con el middleware.
 export type Intencion = 'socias' | 'clientas' | 'proveedoras' | 'mentoria'
 
 export type ProfileData = {
@@ -51,12 +56,13 @@ const publicColumns = {
 
 /** Tarjetas del muro: solo perfiles opt-in (visible=true), sin exponer email. */
 export async function getVisibleProfiles(db: Db, intencion?: Intencion) {
-  const conds = [eq(profiles.visible, true)]
+  const conds = [eq(profiles.visible, true), eq(communityMembers.status, 'active')]
   if (intencion) conds.push(eq(profiles.intencion, intencion))
   return db
     .select(publicColumns)
     .from(profiles)
     .innerJoin(users, eq(profiles.userId, users.id))
+    .innerJoin(communityMembers, eq(communityMembers.userId, profiles.userId))
     .where(and(...conds))
     .orderBy(desc(profiles.updatedAt))
 }
@@ -69,7 +75,14 @@ export async function getPublicProfile(db: Db, userId: string) {
         .select(publicColumns)
         .from(profiles)
         .innerJoin(users, eq(profiles.userId, users.id))
-        .where(and(eq(profiles.userId, userId), eq(profiles.visible, true)))
+        .innerJoin(communityMembers, eq(communityMembers.userId, profiles.userId))
+        .where(
+          and(
+            eq(profiles.userId, userId),
+            eq(profiles.visible, true),
+            eq(communityMembers.status, 'active'),
+          ),
+        )
         .limit(1)
     )[0] ?? null
   )
@@ -82,7 +95,14 @@ export async function getVisibleMemberEmail(db: Db, userId: string): Promise<str
       .select({ email: users.email, visible: profiles.visible })
       .from(users)
       .innerJoin(profiles, eq(profiles.userId, users.id))
-      .where(and(eq(users.id, userId), eq(profiles.visible, true)))
+      .innerJoin(communityMembers, eq(communityMembers.userId, users.id))
+      .where(
+        and(
+          eq(users.id, userId),
+          eq(profiles.visible, true),
+          eq(communityMembers.status, 'active'),
+        ),
+      )
       .limit(1)
   )[0]
   return row?.email ?? null

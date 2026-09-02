@@ -5,7 +5,8 @@ import { getAuth } from '../../lib/auth'
 import { createDb } from '../../lib/db'
 import { invitations, users } from '../../lib/db/schema'
 import { getServerEnv } from '../../lib/env'
-import { addToCommunity, emailAllowedByGroup } from '../../lib/marketing'
+import { addToCommunity } from '../../lib/marketing'
+import { grantMembership } from '../../lib/membership'
 import {
   hashCode,
   normalizeCode,
@@ -27,20 +28,33 @@ function seeOther(path: string): Response {
   return new Response(null, { status: 303, headers: { Location: path } })
 }
 
+/**
+ * Devuelve el id de la usuaria, creándola si no existía.
+ *
+ * OJO: `users` es la tabla COMPARTIDA del ecosistema (la posee `cursos`), así
+ * que acá puede aparecer una alumna que ya tiene cuenta por haber comprado un
+ * curso. En ese caso NO se crea nada: se reutiliza su cuenta, que es
+ * justamente el objetivo de la cuenta única.
+ */
 async function ensureUser(
   db: ReturnType<typeof createDb>,
   email: string,
   name: string,
-): Promise<void> {
-  const existing = (await db.select().from(users).where(eq(users.email, email)).limit(1))[0]
-  if (existing) return
+): Promise<string> {
+  const existing = (
+    await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1)
+  )[0]
+  if (existing) return existing.id
+
+  const id = crypto.randomUUID()
   await db.insert(users).values({
-    id: crypto.randomUUID(),
+    id,
     email,
     name,
-    role: 'member',
+    role: 'student',
     emailVerified: true,
   })
+  return id
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -94,10 +108,13 @@ export const POST: APIRoute = async ({ request }) => {
     if (!inv) return seeOther('/ingresar?error=invalido')
 
     const nombre = inv.name ?? email.split('@')[0]
-    await ensureUser(db, email, nombre)
+    const userId = await ensureUser(db, email, nombre)
+    // El canje es lo que otorga la pertenencia: la cuenta puede ya existir
+    // (alumna de cursos), pero la membresía de la comunidad nace acá.
+    await grantMembership(db, userId, 'invitation')
     await db
       .update(invitations)
-      .set({ status: 'redeemed', redeemedAt: new Date() })
+      .set({ status: 'redeemed', redeemedAt: new Date(), redeemedByUserId: userId })
       .where(eq(invitations.id, inv.id))
 
     // La sumamos a MailerLite (marketing/automatizaciones). Nunca bloquea el
@@ -107,28 +124,24 @@ export const POST: APIRoute = async ({ request }) => {
     } catch {
       /* no crítico */
     }
-  } else {
-    // ── Sin código ────────────────────────────────────────────────────────
-    // Reingreso (usuaria existente) o PRIMER ingreso por grupo de MailerLite:
-    // si el email está en el grupo habilitado (compra), la damos de alta.
-    const existente = (
-      await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1)
-    )[0]
-
-    if (!existente) {
-      try {
-        const { allowed, name } = await emailAllowedByGroup(env, email)
-        if (allowed) {
-          await ensureUser(db, email, name ?? email.split('@')[0])
-        }
-      } catch {
-        // Si MailerLite falla, no creamos usuaria: no se filtra nada, y como no
-        // existe, el magic link con disableSignUp no manda (respuesta genérica).
-      }
-    }
-    // Si existía → reingreso normal (el magic link de abajo se encarga).
-    // No revelamos en ningún caso si el email pertenece o no a la comunidad.
   }
+  // ── Sin código ──────────────────────────────────────────────────────────
+  // Reingreso de una usuaria existente. Con la cuenta única, "existente"
+  // incluye a cualquier alumna de cursos: el magic link se le manda igual.
+  // Que además PUEDA entrar lo decide el middleware (`ensureAccess`), que da el
+  // alta sola si tiene membresía vigente. Mandar el link nunca otorga acceso.
+  //
+  // ⚠️ Acá había una vía legada que consultaba el grupo de MailerLite y, si el
+  // email figuraba, CREABA la usuaria con `emailVerified: true` en la tabla
+  // `users` compartida y le otorgaba la membresía. Se retiró por dos motivos:
+  //   1. Convertía una lista de marketing en un mecanismo de alta de cuentas
+  //      del ecosistema y de acceso a la comunidad, sin autenticar nada. Si esa
+  //      lista se alimentaba desde cualquier formulario público, era auto-alta.
+  //   2. Ese camino hacía una llamada HTTPS externa solo para los emails que NO
+  //      existían, y esa diferencia de latencia permitía distinguir quién tiene
+  //      cuenta — dato sensible dado el perfil de la comunidad.
+  // El acceso por compra ya se resuelve contra `subscriptions`, que es la
+  // fuente real, así que esta vía no aporta nada.
 
   // Magic link tanto para canje como para reingreso. Con disableSignUp, si la
   // usuaria no existe Better Auth no manda nada; respondemos igual (genérico).

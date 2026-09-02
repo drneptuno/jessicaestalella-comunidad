@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getServerEnv } from '../lib/env'
+
+export const prerender = false
+
+// A esta página se llega AUTENTICADA pero sin pertenecer a la comunidad: el
+// caso típico es una alumna de cursos, que con la sesión compartida ya entra
+// identificada a este subdominio. No es un error: es el gate funcionando.
+if (!Astro.locals.user) {
+  return Astro.redirect('/ingresar')
+}
+
+const env = getServerEnv()
+const coursesUrl = env.COURSES_URL ?? 'https://cursos.jessicaestalella.com'
+const nombre = Astro.locals.user.name?.split(' ')[0] ?? ''
+---
+
+<BaseLayout title="Todavía no tenés acceso">
+  <section class="flex min-h-screen items-center justify-center bg-brand-chalk px-6 py-16">
+    <div class="w-full max-w-lg text-center">
+      <img
+        src="/marca/isotipo.svg"
+        alt=""
+        width="284"
+        height="318"
+        class="mx-auto h-16 w-auto"
+      />
+
+      <h1 class="mt-8 font-display text-3xl font-[800] leading-tight text-brand-primary">
+        {nombre ? `${nombre}, esto` : 'Esto'} es un espacio aparte
+      </h1>
+
+      <p class="mt-4 font-body leading-relaxed text-text-secondary">
+        Ya estás identificada con tu cuenta, pero <strong>Capitana BSAS</strong> es una
+        comunidad privada con acceso propio: se entra por invitación o con la
+        membresía activa.
+      </p>
+
+      <div class="mt-8 flex flex-col items-center gap-3">
+        <a
+          href={coursesUrl}
+          class="inline-flex items-center rounded-full bg-brand-secondary px-6 py-3 font-display text-sm font-[700] text-brand-dark transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md"
+        >
+          Ver la membresía
+        </a>
+        <a
+          href="/ingresar"
+          class="font-display text-sm font-[600] text-brand-accent-ink transition-colors hover:text-brand-primary"
+        >
+          Tengo un código de invitación
+        </a>
+      </div>
+
+      <p class="mt-10 font-body text-sm text-text-secondary">
+        ¿Creés que es un error? Escribinos a
+        <a
+          href="mailto:hola@jessicaestalella.com"
+          class="text-brand-accent-ink underline underline-offset-2">hola@jessicaestalella.com</a
+        >
+      </p>
+    </div>
+  </section>
+</BaseLayout>
