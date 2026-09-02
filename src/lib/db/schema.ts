@@ -10,11 +10,30 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core'
 
-// Esquema Drizzle — fuente de verdad de la base `capitanabsas`.
-// Comunidad privada por invitación: sin cursos, sin pagos, sin 2FA.
+// Esquema Drizzle de la comunidad, sobre la base COMPARTIDA del ecosistema.
+//
+// ⚠️ PROPIEDAD DE TABLAS — leer antes de tocar nada:
+// Las tablas de auth (users, sessions, accounts, verifications, rate_limits)
+// las posee el repo `jessicaestalella-cursos`: allí se declaran y desde allí
+// se migran. Acá se declaran SOLO para poder tiparlas y consultarlas; deben
+// reflejar exactamente la forma que tienen allá.
+// `drizzle.config.ts` las excluye vía `tablesFilter`, así que `db:generate`
+// de este repo nunca emite DDL sobre ellas. Si cambian en cursos, se copian
+// acá a mano.
+// Tablas propias de este repo: community_members, invitations, profiles,
+// resources, community_audit_logs.
 
 // ── Enums ────────────────────────────────────────────────────────────────
-export const userRole = pgEnum('user_role', ['member', 'admin'])
+// Espejo del enum de cursos (dueño). La pertenencia a la comunidad NO es un
+// rol: es una fila en `community_members` (ver más abajo).
+export const userRole = pgEnum('user_role', ['student', 'admin'])
+
+export const memberStatus = pgEnum('member_status', ['active', 'revoked'])
+export const memberSource = pgEnum('member_source', [
+  'invitation', // canjeó un código de invitación
+  'subscription', // acceso por membresía activa en cursos
+  'manual', // alta a mano por Jessica
+])
 export const invitationStatus = pgEnum('invitation_status', [
   'pending',
   'redeemed',
@@ -22,14 +41,19 @@ export const invitationStatus = pgEnum('invitation_status', [
 ])
 export const intencion = pgEnum('intencion', ['socias', 'clientas', 'proveedoras', 'mentoria'])
 
-// ── Usuarias y auth (gestionadas por Better Auth) ─────────────────────────
+// ── Usuarias y auth (TABLAS DE `cursos` — solo lectura desde acá) ─────────
+// Espejo exacto del schema de cursos. No migrar desde este repo.
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
-  role: userRole('role').notNull().default('member'),
+  role: userRole('role').notNull().default('student'),
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
+  twoFactorEnabled: boolean('two_factor_enabled').notNull().default(false),
+  banned: boolean('banned').notNull().default(false),
+  banReason: text('ban_reason'),
+  banExpires: timestamp('ban_expires', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
@@ -45,6 +69,7 @@ export const sessions = pgTable(
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
+    impersonatedBy: text('impersonated_by'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -94,6 +119,49 @@ export const rateLimits = pgTable('rate_limits', {
   count: integer('count').notNull().default(0),
   lastRequest: bigint('last_request', { mode: 'number' }).notNull(),
 })
+
+// ── Suscripciones (TABLA DE `cursos` — solo lectura desde acá) ────────────
+// Espejo PARCIAL: solo las columnas que la comunidad necesita para responder
+// "¿esta usuaria tiene membresía activa?". Con la base compartida, el acceso
+// por compra se resuelve consultando la fuente real en vez de confiar en un
+// grupo de MailerLite sincronizado. Excluida del `tablesFilter`.
+export const subscriptionStatus = pgEnum('subscription_status', [
+  'pending',
+  'active',
+  'past_due',
+  'cancelled',
+  'expired',
+])
+
+export const subscriptions = pgTable('subscriptions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  status: subscriptionStatus('status').notNull().default('pending'),
+  // Gobierna el acceso: se extiende con cada cobro aprobado.
+  currentPeriodEnd: timestamp('current_period_end', { withTimezone: true }),
+})
+
+// ── Pertenencia a la comunidad (EL gate de acceso) ────────────────────────
+// Con sesión compartida entre cursos y comunidad, tener sesión válida ya NO
+// alcanza para entrar acá: cualquier alumna de cursos la tiene. La pertenencia
+// es explícita y se comprueba en el middleware junto con la sesión.
+//
+// Se da de alta al canjear una invitación, y (a futuro) automáticamente
+// cuando exista una suscripción activa en cursos — reemplazando al grupo de
+// MailerLite como mecanismo de acceso.
+export const communityMembers = pgTable(
+  'community_members',
+  {
+    userId: text('user_id')
+      .primaryKey()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    status: memberStatus('status').notNull().default('active'),
+    source: memberSource('source').notNull(),
+    joinedAt: timestamp('joined_at', { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  },
+  (t) => [index('community_members_status_idx').on(t.status)],
+)
 
 // ── Invitaciones (el gate de acceso) ──────────────────────────────────────
 // El código se guarda HASHEADO, nunca en texto plano. Una por persona,
@@ -152,9 +220,11 @@ export const resources = pgTable(
   (t) => [index('resources_category_idx').on(t.category)],
 )
 
-// ── Auditoría (acciones de admin) ─────────────────────────────────────────
+// ── Auditoría (acciones de admin en la comunidad) ─────────────────────────
+// Renombrada a `community_audit_logs`: en la base compartida, `audit_logs`
+// pertenece a cursos y tiene otra forma.
 export const auditLogs = pgTable(
-  'audit_logs',
+  'community_audit_logs',
   {
     id: text('id').primaryKey(),
     actorId: text('actor_id').notNull(),

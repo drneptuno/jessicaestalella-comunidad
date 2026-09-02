@@ -3,6 +3,23 @@
 Hub de documentación de la comunidad **Capitana BSAS** (`capitanabsas.jessicaestalella.com`).
 Si estás retomando el proyecto en una conversación nueva, **empezá por acá**.
 
+
+## ⚠️ Identidad compartida (leer primero)
+
+Desde el 2026-08-28 la comunidad **no tiene base ni usuarias propias**: comparte la base
+y la identidad con `jessicaestalella-cursos`. Una sola cuenta, una sola sesión (SSO por
+subdominios). Consecuencias directas para este repo:
+
+- **No se migra desde acá.** El dueño del schema es cursos (`src/db/schema.ts`).
+  `src/lib/db/schema.ts` es un espejo; `db:generate`/`db:migrate` están deshabilitados.
+- **Tener sesión ≠ ser miembra.** Una alumna de cursos llega autenticada a este
+  subdominio. El gate real es `community_members` (ver `src/lib/membership.ts`), y el
+  middleware exige sesión **y** membresía.
+- **El acceso por compra ya no depende de MailerLite**: se resuelve leyendo
+  `subscriptions` en la base compartida.
+
+📄 Detalle completo: [`../../jessicaestalella-cursos/docs/identidad-compartida.md`](../../jessicaestalella-cursos/docs/identidad-compartida.md)
+
 ## Qué es
 
 Espacio privado y curado **donde mujeres se presentan y conectan con intención**. Cada

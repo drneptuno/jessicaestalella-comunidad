@@ -11,9 +11,16 @@ jessicaestalella.com            cursos.jessicaestalella.com     capitanabsas.jes
   contenido anónimo               login + DB                      login + DB
 ```
 
-Regla del ecosistema: **cero código compartido**; los repos se conectan solo por URLs y por
-servicios (Resend, MailerLite, Neon). El repo `cursos` es **referencia de patrones** de
-auth/DB/seguridad, no una dependencia.
+Regla del ecosistema (actualizada 2026-08-28): **cero código compartido, pero identidad
+compartida**. La web de marketing sigue siendo una isla anónima. `cursos` y `comunidad`
+comparten ahora **base de datos, tabla de usuarias y sesión** (cuenta única + SSO por
+subdominios): una alumna se loguea una vez y está identificada en las dos.
+
+- `cursos` es el **dueño del schema** de la base compartida (migra también las tablas de
+  la comunidad). Este repo NO migra.
+- Tener sesión **no** implica pertenecer a la comunidad: el gate es `community_members`.
+
+📄 Ver [`../../jessicaestalella-cursos/docs/identidad-compartida.md`](../../jessicaestalella-cursos/docs/identidad-compartida.md).
 
 ## Stack de este repo
 
@@ -22,8 +29,8 @@ auth/DB/seguridad, no una dependencia.
 | Framework | Astro 6 (SSR, `output: 'server'`) + adapter `@astrojs/cloudflare` |
 | UI | Componentes Astro; React solo para islas con estado |
 | Estilos | Tailwind v4 (`@theme inline` en `src/styles/globals.css`) |
-| Auth | Better Auth (magic link), sesiones en nuestro Postgres |
-| DB | Neon (Postgres) + Drizzle ORM · driver `neon-http` |
+| Auth | Better Auth (magic link + contraseña) — **cuenta única del ecosistema** |
+| DB | Neon (Postgres) + Drizzle ORM · driver `neon-http` — **base compartida con `cursos`** |
 | Email | Resend (transaccional) · MailerLite (marketing) |
 | Deploy | Cloudflare Workers |
 | Lenguaje | TypeScript strict |
@@ -73,6 +80,8 @@ request → src/middleware.ts
             ├─ /api/auth/* → pasa directo (lo maneja Better Auth)
             └─ resto → getSession() → locals.user/session
                         └─ si ruta protegida (/app, /muro) y sin sesión → redirect /ingresar
+                        └─ si ruta protegida y CON sesión pero SIN membresía
+                             → redirect /sin-acceso   (alumna de cursos, no miembra)
           → página o endpoint
 ```
 

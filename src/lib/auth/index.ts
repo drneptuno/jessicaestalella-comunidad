@@ -30,15 +30,35 @@ function build(env: ServerEnv) {
       },
     }),
 
-    // Comunidad por invitación: nada de email+contraseña. El acceso es por
-    // código de invitación (endpoint propio) y reingreso por magic link.
-    emailAndPassword: { enabled: false },
+    // Cuenta ÚNICA del ecosistema: la misma persona puede entrar acá con el
+    // magic link de la comunidad o con la contraseña que creó en `cursos`.
+    // El registro abierto sigue cerrado: quien no tiene cuenta no la crea acá
+    // (`disableSignUp` en el magic link, y sin endpoint de sign-up expuesto).
+    // Entrar NO implica pertenecer: el gate real es `community_members`.
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 10,
+      maxPasswordLength: 128,
+      // El alta y el reseteo de contraseña los maneja `cursos` (dueño del
+      // flujo). Acá solo se valida la contraseña ya existente.
+      disableSignUp: true,
+    },
 
     user: {
       additionalFields: {
         // El rol lo maneja el servidor; nunca entra desde el cliente.
-        role: { type: 'string', input: false, defaultValue: 'member' },
+        // Espejo del enum de cursos (dueño del schema de auth).
+        role: { type: 'string', input: false, defaultValue: 'student' },
       },
+    },
+
+    // SSO por subdominios: la cookie se emite en `.jessicaestalella.com` y
+    // viaja tanto a cursos.* como a capitanabsas.*. Requiere que ambas apps
+    // compartan BETTER_AUTH_SECRET y base de datos.
+    advanced: {
+      crossSubDomainCookies: env.COOKIE_DOMAIN
+        ? { enabled: true, domain: env.COOKIE_DOMAIN }
+        : { enabled: false },
     },
 
     session: {
@@ -58,6 +78,11 @@ function build(env: ServerEnv) {
       },
     },
 
+    // ⚠️ Solo el propio origen. `cursos` no postea contra este `/api/auth`
+    // (monta su propio Better Auth y lee la sesión de la base compartida), así
+    // que sumarlo no habilitaría nada y sí ampliaría la superficie de CSRF
+    // entre subdominios hermanos, donde `SameSite=Lax` no protege.
+    // `COURSES_URL` se sigue usando, pero solo como destino de enlaces.
     trustedOrigins: [env.BETTER_AUTH_URL],
 
     plugins: [

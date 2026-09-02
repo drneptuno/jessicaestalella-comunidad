@@ -10,9 +10,9 @@ npm run build        # build de producción
 npm run preview      # build + wrangler dev (runtime real de Workers)
 npm run deploy       # build + wrangler deploy (a Cloudflare)
 npm run typecheck    # astro check
-npm run db:generate  # generar migración desde el schema
-npm run db:migrate   # aplicar migraciones a la base
-npm run db:studio    # UI de Drizzle
+npm run db:generate  # ⛔ deshabilitado — la base la migra el repo `cursos`
+npm run db:migrate   # ⛔ deshabilitado — ídem
+npm run db:studio    # ⛔ deshabilitado — usar el de `cursos`
 npm run invitar -- <email> ["Nombre"] [díasVigencia]   # crea una invitación
 npm run recurso -- <url> "<título>" ["categoría"] ["descripción"] [orden]   # agrega un recurso
 npm run seed:demo    # carga datos de ejemplo para la vista previa
@@ -56,8 +56,10 @@ Dev: `.env.local` (no se commitea). Prod: `wrangler secret put <NOMBRE>` (nunca 
 
 | Variable | Para qué | Dónde |
 |----------|----------|-------|
-| `DATABASE_URL` | Base Neon `capitanabsas` (host `-pooler`) | secret |
-| `BETTER_AUTH_SECRET` | Firma de sesiones (`openssl rand -base64 32`) | secret |
+| `DATABASE_URL` | Base **compartida** con `cursos` — idéntica en ambos | secret |
+| `BETTER_AUTH_SECRET` | Firma de sesiones — **idéntico al de `cursos`** | secret |
+| `COOKIE_DOMAIN` | `.jessicaestalella.com` en prod (SSO); vacío en local | env |
+| `COURSES_URL` | URL de la plataforma de cursos (origen confiable) | env |
 | `BETTER_AUTH_URL` | URL base para callbacks | env |
 | `RESEND_API_KEY` | Email transaccional | secret |
 | `RESEND_FROM_EMAIL` | Remitente (dominio verificado) | env |

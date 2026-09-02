@@ -1,5 +1,11 @@
 # Emails y marketing
 
+> ⚠️ **Actualizado 2026-08-28.** MailerLite **ya no es el mecanismo de acceso** a la
+> comunidad. Con la base compartida, el acceso por compra se resuelve leyendo la tabla
+> `subscriptions` (la fuente real). MailerLite queda para marketing y automatizaciones.
+> Queda una vía legada en `api/ingresar.ts` para altas de gente sin cuenta en el
+> ecosistema; se retira cuando toda la venta pase por `cursos`.
+
 ← Volver al [índice de documentación](./README.md)
 
 ## Reparto de responsabilidades

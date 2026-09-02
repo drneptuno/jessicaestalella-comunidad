@@ -17,6 +17,15 @@ export interface ServerEnv {
   MAILERLITE_API_KEY?: string
   MAILERLITE_GROUP_ID?: string
   PUBLIC_SITE_URL?: string
+  /**
+   * Dominio padre para la cookie de sesión (p. ej. `.jessicaestalella.com`).
+   * Es lo que habilita el SSO con `cursos`: la cookie emitida en cualquiera
+   * de los dos subdominios viaja al otro. Vacío en local (localhost no acepta
+   * cookies de dominio padre) → sesión por subdominio, como antes.
+   */
+  COOKIE_DOMAIN?: string
+  /** URL de la plataforma de cursos — para links y CORS de sesión compartida. */
+  COURSES_URL?: string
   /** SOLO dev: bypass de auth para vista previa. Ignorado en prod. */
   PREVIEW_BYPASS_AUTH?: string
 }
@@ -54,6 +63,8 @@ export function getServerEnv(): ServerEnv {
     MAILERLITE_API_KEY: get('MAILERLITE_API_KEY'),
     MAILERLITE_GROUP_ID: get('MAILERLITE_GROUP_ID'),
     PUBLIC_SITE_URL: get('PUBLIC_SITE_URL'),
+    COOKIE_DOMAIN: get('COOKIE_DOMAIN'),
+    COURSES_URL: get('COURSES_URL'),
     PREVIEW_BYPASS_AUTH: get('PREVIEW_BYPASS_AUTH'),
   }
 }
