@@ -55,10 +55,22 @@ function build(env: ServerEnv) {
     // SSO por subdominios: la cookie se emite en `.jessicaestalella.com` y
     // viaja tanto a cursos.* como a capitanabsas.*. Requiere que ambas apps
     // compartan BETTER_AUTH_SECRET y base de datos.
+    //
+    // ⚠️ `COOKIE_PREFIX` aísla entornos, y hace falta porque los subdominios
+    // heredan las cookies del padre: la cookie de producción, emitida en
+    // `.jessicaestalella.com`, TAMBIÉN llega a
+    // `capitanabsas.dev.jessicaestalella.com`. Con el mismo nombre en los dos
+    // entornos, el navegador manda dos cookies homónimas y el servidor lee la
+    // que le toque — una sesión de pruebas, contra otra base, pisando la real.
+    //
+    // Es la cuarta condición del SSO: el prefijo tiene que ser IDÉNTICO al de
+    // cursos, y distinto por entorno.
+    // Ver ../jessicaestalella-cursos/docs/identidad-compartida.md.
     advanced: {
       crossSubDomainCookies: env.COOKIE_DOMAIN
         ? { enabled: true, domain: env.COOKIE_DOMAIN }
         : { enabled: false },
+      ...(env.COOKIE_PREFIX ? { cookiePrefix: env.COOKIE_PREFIX } : {}),
     },
 
     session: {

@@ -17,6 +17,33 @@
 	},
 	"observability": {
 		"enabled": true
+	},
+
+	// ── Entornos ───────────────────────────────────────────────────────────────
+	// El entorno de pruebas es un Worker aparte, servido en
+	// `capitanabsas.dev.jessicaestalella.com`. Apunta al branch de dev de Neon:
+	// probar contra la base real significa mandarle mails a personas reales.
+	//
+	// Deploy:  npx wrangler deploy --env staging   (después de `astro build`)
+	//
+	// ⚠️ `assets` se repite a propósito: los entornos con nombre no heredan los
+	// bindings del bloque de arriba, y si falta, el Worker de pruebas se sube
+	// sin los archivos estáticos.
+	//
+	// Secretos por entorno: wrangler secret put <NOMBRE> --env staging
+	// En dev, COOKIE_DOMAIN=.dev.jessicaestalella.com y COOKIE_PREFIX=dev-jessica
+	// (idéntico al de cursos, o se rompe el SSO).
+	"env": {
+		"staging": {
+			"name": "jessicaestalella-comunidad-staging",
+			"assets": {
+				"directory": "./dist/client",
+				"binding": "ASSETS"
+			},
+			"observability": {
+				"enabled": true
+			}
+		}
 	}
 	// Secretos (DATABASE_URL, BETTER_AUTH_SECRET, RESEND_API_KEY) NUNCA acá.
 	// En prod: wrangler secret put <NOMBRE>

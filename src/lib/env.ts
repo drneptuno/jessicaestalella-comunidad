@@ -24,6 +24,13 @@ export interface ServerEnv {
    * cookies de dominio padre) → sesión por subdominio, como antes.
    */
   COOKIE_DOMAIN?: string
+  /**
+   * Prefijo del nombre de la cookie de sesión. Aísla entornos que comparten
+   * dominio padre: la cookie de producción también llega a los subdominios de
+   * `dev.`, y con el mismo nombre se pisan. Tiene que ser IDÉNTICO al de
+   * `cursos`, o se rompe el SSO. Vacío = default de Better Auth.
+   */
+  COOKIE_PREFIX?: string
   /** URL de la plataforma de cursos — para links y CORS de sesión compartida. */
   COURSES_URL?: string
   /** SOLO dev: bypass de auth para vista previa. Ignorado en prod. */
@@ -64,6 +71,7 @@ export function getServerEnv(): ServerEnv {
     MAILERLITE_GROUP_ID: get('MAILERLITE_GROUP_ID'),
     PUBLIC_SITE_URL: get('PUBLIC_SITE_URL'),
     COOKIE_DOMAIN: get('COOKIE_DOMAIN'),
+    COOKIE_PREFIX: get('COOKIE_PREFIX'),
     COURSES_URL: get('COURSES_URL'),
     PREVIEW_BYPASS_AUTH: get('PREVIEW_BYPASS_AUTH'),
   }
