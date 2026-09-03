@@ -1,5 +1,12 @@
 # Acceso y autenticación
 
+> ⚠️ **Actualizado 2026-08-28 — identidad compartida.** El acceso ya no se resuelve solo
+> en este repo: la cuenta y la sesión son del ecosistema (compartidas con `cursos`), y la
+> pertenencia a la comunidad es una tabla aparte (`community_members`). Lo que sigue
+> describe el flujo de invitación/magic link, que se mantiene; el gate de acceso está en
+> `src/lib/membership.ts`. Ver
+> [`../../jessicaestalella-cursos/docs/identidad-compartida.md`](../../jessicaestalella-cursos/docs/identidad-compartida.md).
+
 ← Volver al [índice de documentación](./README.md)
 
 ## Modelo de acceso: dos puertas

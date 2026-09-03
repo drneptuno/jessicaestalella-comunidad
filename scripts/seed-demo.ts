@@ -6,7 +6,7 @@
 
 import { eq, like } from 'drizzle-orm'
 import { createDb } from '../src/lib/db'
-import { profiles, resources, users } from '../src/lib/db/schema'
+import { communityMembers, profiles, resources, users } from '../src/lib/db/schema'
 import { PREVIEW_USER } from '../src/lib/preview'
 
 const miembras = [
@@ -74,6 +74,16 @@ async function main() {
     console.error('DATABASE_URL no está definida (¿corriste con .env.local?).')
     process.exit(1)
   }
+  // ⚠️ La base es COMPARTIDA con `cursos` y en producción contiene datos reales
+  // de alumnas. Este script inserta usuarias y perfiles visibles: nunca debe
+  // correr contra producción.
+  if (process.env.COOKIE_DOMAIN || process.env.NODE_ENV === 'production') {
+    console.error(
+      'seed:demo está bloqueado: COOKIE_DOMAIN/NODE_ENV indican un entorno productivo.',
+    )
+    process.exit(1)
+  }
+
   const db = createDb(process.env.DATABASE_URL)
 
   // Limpiar demo previo (profiles caen por cascade al borrar users).
@@ -86,9 +96,11 @@ async function main() {
     id: PREVIEW_USER.id,
     email: PREVIEW_USER.email,
     name: PREVIEW_USER.name,
-    role: 'admin',
+    // Coherente con PREVIEW_USER: rol mínimo, nunca admin.
+    role: 'student',
     emailVerified: true,
   })
+  await db.insert(communityMembers).values({ userId: PREVIEW_USER.id, source: 'manual' })
   await db.insert(profiles).values({
     userId: PREVIEW_USER.id,
     rubro: 'Psicología',
@@ -108,9 +120,12 @@ async function main() {
       id,
       email: `${m.name.split(' ')[0].toLowerCase()}@demo.local`,
       name: m.name,
-      role: 'member',
+      role: 'student',
       emailVerified: true,
     })
+    // La pertenencia es explícita desde la unificación de auth: sin esto, la
+    // usuaria demo tendría sesión pero el middleware la mandaría a /sin-acceso.
+    await db.insert(communityMembers).values({ userId: id, source: 'manual' })
     await db.insert(profiles).values({
       userId: id,
       rubro: m.rubro,

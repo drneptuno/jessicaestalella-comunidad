@@ -3,8 +3,16 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"name": "jessicaestalella-comunidad",
 	"main": "@astrojs/cloudflare/entrypoints/server",
+	// ⚠️ `./dist/client`, NO `./dist`. El adapter de Astro deja el bundle del
+	// servidor y `dist/server/.dev.vars` (con DATABASE_URL, BETTER_AUTH_SECRET,
+	// RESEND_API_KEY…) dentro de `dist/`. Workers Assets sube TODO el directorio
+	// recursivamente, sin excluir dotfiles: apuntar a `./dist` publicaría los
+	// secretos en `https://<dominio>/server/.dev.vars`.
+	// `npm run deploy` corre el build antes y el adapter regenera un redirect que
+	// corrige esto, pero un `wrangler deploy` suelto (CI, checkout limpio sin
+	// `.wrangler/`) usa ESTE archivo. Tiene que ser correcto por sí mismo.
 	"assets": {
-		"directory": "./dist",
+		"directory": "./dist/client",
 		"binding": "ASSETS"
 	},
 	"observability": {

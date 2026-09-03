@@ -1,5 +1,21 @@
 # CLAUDE.md — jessicaestalella-comunidad
 
+> 🔒 **Estándares de código y seguridad del ecosistema:** `../jessicaestalella-nueva-web-astro/docs/estandares-de-codigo.md`
+> — reglas obligatorias, cada una con el problema real que la originó. Leer antes de
+> escribir código.
+
+> 📋 **Backlog transversal del ecosistema:** `../jessicaestalella-nueva-web-astro/docs/backlog-ecosistema.md`
+
+> ⚠️ **Este repo NO es dueño de la base.** La base es COMPARTIDA con
+> `jessicaestalella-cursos`, que declara y migra TODAS las tablas (incluidas las de la
+> comunidad). Acá `src/lib/db/schema.ts` es un **espejo** para tipar consultas, y
+> `db:generate`/`db:migrate` están deshabilitados a propósito.
+>
+> Hay **cuenta única y sesión compartida** con cursos: tener sesión **no** implica
+> pertenecer a la comunidad. El gate es `community_members` + `src/lib/membership.ts`.
+>
+> 📄 **Documento de referencia:** `../jessicaestalella-cursos/docs/identidad-compartida.md`
+
 > **Para el contexto completo del proyecto, leé [`docs/README.md`](./docs/README.md)** — hub
 > con producto, arquitectura, acceso/auth, base de datos, emails y operaciones, todo cruzado.
 > Este archivo es el resumen de convenciones y reglas de trabajo.
